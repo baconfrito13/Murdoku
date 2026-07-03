@@ -19,8 +19,8 @@ No build step, no dependencies — plain HTML/CSS/ES modules.
   blocks squares.
 - Place all suspects **and the victim** so every **row and column contains
   exactly one person**.
-- Every clue on every card must be **true** ("beside" = orthogonally adjacent;
-  "south of" = strictly lower on the map).
+- Every clue on every card must be **true** ("beside" = orthogonally adjacent
+  and in the same room; "south of" = strictly lower on the map).
 - The murderer is whoever ends up **alone with the victim in the same room**.
   Make your accusation!
 
@@ -40,6 +40,17 @@ Campaign of 8 original cases (4×4 → 7×7), daily case, random cases, ✕-mark
 undo/redo, live error checking, reasoned hints, auto-✕, timer, autosave &
 resume, keyboard controls, touch + long-press, light/dark themes, ARIA grid
 semantics and reduced-motion support.
+
+## Fidelity notes
+
+Mechanics follow the published Murdoku rules: one person per row and column
+(victim included, placed by the solver), clues as hard rules, *beside* =
+adjacent **and** in the same room, strict compass directions, ✕-elimination,
+and the murderer read off the solved layout as the one person alone with the
+victim. Scope choices vs. the book: boards are square (4×4 → 7×7 — the book
+scales to larger and non-square grids) and there are no scene-specific twist
+rules. All characters, case titles, stories and clue wording here are
+original.
 
 ## Development
 

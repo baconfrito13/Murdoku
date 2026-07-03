@@ -6,7 +6,9 @@
 // Kinds:
 //   in_room          {room}                owner is in room
 //   not_in_room      {room}
-//   beside_object    {objType}             orthogonally adjacent to ≥1 such object
+//   beside_object    {objType}             orthogonally adjacent to ≥1 such
+//                                          object IN THE SAME ROOM (book rule:
+//                                          "beside" never crosses a room wall)
 //   not_beside_object{objType}
 //   same_row_object  {objType}             shares a row with ≥1 such object
 //   same_col_object  {objType}
@@ -39,6 +41,12 @@ function dirHolds(cellA, cellB, dir, n) {
   }
 }
 
+// "Beside" in Murdoku = directly left/right/above/below AND in the same area.
+// Two squares can touch across a room wall without being "beside" each other.
+function besideCells(cse, cell) {
+  return neighbors4(cell, cse.size).filter((nb) => cse.roomOf[nb] === cse.roomOf[cell]);
+}
+
 function onEdge(cell, dir, n) {
   switch (dir) {
     case 'north': return rowOf(cell, n) === 0;
@@ -64,9 +72,9 @@ export function evalClue(cse, clue, placement) {
     case 'not_in_room':
       return cse.roomOf[cell] !== clue.room;
     case 'beside_object':
-      return neighbors4(cell, n).some((nb) => cse.furniture[nb]?.type === clue.objType);
+      return besideCells(cse, cell).some((nb) => cse.furniture[nb]?.type === clue.objType);
     case 'not_beside_object':
-      return !neighbors4(cell, n).some((nb) => cse.furniture[nb]?.type === clue.objType);
+      return !besideCells(cse, cell).some((nb) => cse.furniture[nb]?.type === clue.objType);
     case 'same_row_object':
       return furnitureCellsOfType(cse, clue.objType).some((f) => rowOf(f, n) === rowOf(cell, n));
     case 'same_col_object':
@@ -86,12 +94,12 @@ export function evalClue(cse, clue, placement) {
     case 'beside_person': {
       const other = placement.get(clue.other);
       if (other == null) return null;
-      return neighbors4(cell, n).includes(other);
+      return besideCells(cse, cell).includes(other);
     }
     case 'not_beside_person': {
       const other = placement.get(clue.other);
       if (other == null) return null;
-      return !neighbors4(cell, n).includes(other);
+      return !besideCells(cse, cell).includes(other);
     }
     case 'same_room_person': {
       const other = placement.get(clue.other);

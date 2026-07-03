@@ -80,6 +80,35 @@ test('clue evaluation: rooms, beside, directions, edge, alone', () => {
   F({ owner: 'b', kind: 'dir_of_person', other: 'v', dir: 'south' });
 });
 
+test('book rule: "beside" never crosses a room wall', () => {
+  const cse = tinyCase();
+  // (1,0) is West Hall, orthogonally adjacent to the plant at (1,1) East Hall:
+  // adjacent across a wall -> NOT beside.
+  const place = new Map([
+    ['a', idx(1, 0, 3)], // west hall, touching the plant across the wall
+    ['b', idx(0, 1, 3)], // east hall, directly north of a across the wall
+    ['v', idx(2, 2, 3)],
+  ]);
+  assert.equal(evalClue(cse, { owner: 'a', kind: 'beside_object', objType: 'plant' }, place), false);
+  assert.equal(evalClue(cse, { owner: 'a', kind: 'not_beside_object', objType: 'plant' }, place), true);
+  // a (1,0) and b (0,1) are diagonal - not beside anyway; use v? build direct case:
+  // a (1,0) west hall is adjacent to (0,0) west hall: same room -> beside works in-room.
+  const place2 = new Map([
+    ['a', idx(1, 0, 3)],
+    ['b', idx(0, 0, 3)], // same west hall, directly north of a
+    ['v', idx(2, 2, 3)],
+  ]);
+  assert.equal(evalClue(cse, { owner: 'a', kind: 'beside_person', other: 'b' }, place2), true);
+  // b (0,0) west hall vs someone at (0,1) east hall: adjacent across the wall.
+  const place3 = new Map([
+    ['a', idx(0, 1, 3)], // east hall
+    ['b', idx(0, 0, 3)], // west hall, orthogonally adjacent to a
+    ['v', idx(2, 2, 3)],
+  ]);
+  assert.equal(evalClue(cse, { owner: 'b', kind: 'beside_person', other: 'a' }, place3), false);
+  assert.equal(evalClue(cse, { owner: 'b', kind: 'not_beside_person', other: 'a' }, place3), true);
+});
+
 test('clue evaluation: beside/same-room person and alone', () => {
   const cse = tinyCase();
   const place = new Map([

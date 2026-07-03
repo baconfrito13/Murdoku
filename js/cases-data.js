@@ -81,32 +81,40 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "vera",
-    "kind": "not_beside_object",
-    "objType": "clock"
+    "owner": "v_gilt",
+    "kind": "dir_of_person",
+    "other": "felix",
+    "dir": "east"
    },
    {
-    "owner": "vera",
-    "kind": "dir_of_object",
-    "objType": "clock",
-    "dir": "north"
+    "owner": "ash",
+    "kind": "same_col_object",
+    "objType": "clock"
    },
    {
     "owner": "ash",
     "kind": "dir_of_person",
-    "other": "felix",
-    "dir": "west"
+    "other": "vera",
+    "dir": "east"
+   },
+   {
+    "owner": "vera",
+    "kind": "dir_of_person",
+    "other": "v_gilt",
+    "dir": "south"
+   },
+   {
+    "owner": "ash",
+    "kind": "edge",
+    "dir": "south"
    },
    {
     "owner": "felix",
-    "kind": "dir_of_person",
-    "other": "ash",
-    "dir": "north"
+    "kind": "beside_object",
+    "objType": "clock"
    }
   ],
-  "givens": {
-   "v_gilt": 3
-  },
+  "givens": {},
   "story": {
    "title": "The Gilt Manor Affair",
    "intro": "Millionaire Barnaby Gilt invited three guests for brandy and bragging. By midnight, only the bragging had stopped — permanently. Reconstruct where everyone stood when the lights went out.",
@@ -252,10 +260,10 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "v_gilt": 3,
-   "vera": 4,
    "ash": 13,
-   "felix": 10
+   "felix": 10,
+   "vera": 4,
+   "v_gilt": 3
   },
   "murderer": "vera",
   "difficulty": "easy"
@@ -345,6 +353,12 @@ export const CAMPAIGN_CASES = [
     "room": 2
    },
    {
+    "owner": "coco",
+    "kind": "dir_of_person",
+    "other": "v_crumb",
+    "dir": "west"
+   },
+   {
     "owner": "prudence",
     "kind": "dir_of_person",
     "other": "coco",
@@ -355,11 +369,14 @@ export const CAMPAIGN_CASES = [
     "kind": "dir_of_object",
     "objType": "cake",
     "dir": "south"
+   },
+   {
+    "owner": "v_crumb",
+    "kind": "edge",
+    "dir": "north"
    }
   ],
-  "givens": {
-   "v_crumb": 2
-  },
+  "givens": {},
   "story": {
    "title": "Death Rises at Dawn",
    "intro": "Master baker Otto Crumb was found cold beside his proofing dough — which, unlike him, had risen. Three early visitors were in the bakery. The flour on the floor remembers every step.",
@@ -617,6 +634,11 @@ export const CAMPAIGN_CASES = [
   "clues": [
    {
     "owner": "felix",
+    "kind": "edge",
+    "dir": "west"
+   },
+   {
+    "owner": "felix",
     "kind": "beside_object",
     "objType": "lantern"
    },
@@ -633,20 +655,29 @@ export const CAMPAIGN_CASES = [
     "dir": "east"
    },
    {
+    "owner": "wren",
+    "kind": "dir_of_person",
+    "other": "v_starr",
+    "dir": "east"
+   },
+   {
+    "owner": "indigo",
+    "kind": "same_col_object",
+    "objType": "telescope"
+   },
+   {
     "owner": "indigo",
     "kind": "same_row_object",
     "objType": "telescope"
    },
    {
-    "owner": "indigo",
+    "owner": "v_starr",
     "kind": "dir_of_person",
-    "other": "wren",
+    "other": "vera",
     "dir": "west"
    }
   ],
-  "givens": {
-   "v_starr": 21
-  },
+  "givens": {},
   "story": {
    "title": "The Comet That Never Came",
    "intro": "Dr. Celeste Starr promised the town a comet at 11:07. At 11:08 she was dead under her own dome. Four colleagues were inside when the shutters jammed.",
@@ -792,11 +823,11 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "v_starr": 21,
    "felix": 5,
    "indigo": 17,
    "wren": 3,
-   "vera": 14
+   "vera": 14,
+   "v_starr": 21
   },
   "murderer": "indigo",
   "difficulty": "easy"
@@ -806,62 +837,62 @@ export const CAMPAIGN_CASES = [
   "title": "Snake Eyes at the Silver Slipper",
   "size": 5,
   "roomOf": [
-   1,
-   1,
-   1,
-   1,
-   1,
-   1,
-   2,
-   2,
-   2,
-   0,
-   1,
-   2,
-   2,
-   0,
-   0,
-   2,
-   2,
-   3,
-   0,
-   0,
    3,
    3,
    3,
+   2,
+   2,
    0,
-   0
+   3,
+   3,
+   2,
+   2,
+   0,
+   0,
+   0,
+   1,
+   2,
+   0,
+   1,
+   1,
+   1,
+   2,
+   0,
+   1,
+   1,
+   1,
+   2
   ],
   "rooms": [
    {
-    "name": "Lounge",
+    "name": "Back Office",
     "hue": 0
    },
    {
-    "name": "Back Office",
+    "name": "Gaming Floor",
     "hue": 90
    },
    {
-    "name": "Gaming Floor",
+    "name": "Terrace",
     "hue": 180
    },
    {
-    "name": "Terrace",
+    "name": "Lounge",
     "hue": 270
    }
   ],
   "furniture": {
-   "8": {
+   "2": {
     "type": "cards"
    },
    "9": {
+    "type": "slot"
+   },
+   "10": {
     "type": "plant"
    },
-   "11": {
-    "type": "plant"
-   },
-   "24": {
-    "type": "plant"
+   "20": {
+    "type": "slot"
    }
   },
   "people": [
@@ -904,42 +935,38 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "v_marlow",
-    "kind": "dir_of_person",
-    "other": "basil",
-    "dir": "south"
-   },
-   {
-    "owner": "prudence",
-    "kind": "dir_of_person",
-    "other": "ash",
-    "dir": "south"
-   },
-   {
-    "owner": "v_marlow",
-    "kind": "same_row_object",
-    "objType": "cards"
-   },
-   {
     "owner": "ash",
-    "kind": "same_room_person",
-    "other": "prudence"
-   },
-   {
-    "owner": "prudence",
-    "kind": "same_col_object",
-    "objType": "plant"
-   },
-   {
-    "owner": "prudence",
     "kind": "dir_of_person",
     "other": "coco",
     "dir": "south"
    },
    {
-    "owner": "basil",
+    "owner": "prudence",
     "kind": "not_beside_object",
-    "objType": "plant"
+    "objType": "cards"
+   },
+   {
+    "owner": "coco",
+    "kind": "dir_of_person",
+    "other": "v_marlow",
+    "dir": "east"
+   },
+   {
+    "owner": "v_marlow",
+    "kind": "dir_of_object",
+    "objType": "cards",
+    "dir": "east"
+   },
+   {
+    "owner": "basil",
+    "kind": "beside_object",
+    "objType": "cards"
+   },
+   {
+    "owner": "prudence",
+    "kind": "dir_of_person",
+    "other": "basil",
+    "dir": "east"
    }
   ],
   "givens": {},
@@ -1088,13 +1115,13 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "v_marlow": 5,
-   "prudence": 21,
-   "basil": 3,
-   "ash": 17,
+   "basil": 1,
+   "v_marlow": 8,
+   "prudence": 22,
+   "ash": 15,
    "coco": 14
   },
-  "murderer": "basil",
+  "murderer": "coco",
   "difficulty": "medium"
  },
  {
@@ -1228,10 +1255,9 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "wren",
-    "kind": "dir_of_object",
-    "objType": "candelabrum",
-    "dir": "west"
+    "owner": "v_fontaine",
+    "kind": "not_beside_object",
+    "objType": "candelabrum"
    },
    {
     "owner": "vera",
@@ -1249,6 +1275,11 @@ export const CAMPAIGN_CASES = [
     "owner": "indigo",
     "kind": "in_room",
     "room": 4
+   },
+   {
+    "owner": "prudence",
+    "kind": "not_same_room_person",
+    "other": "indigo"
    },
    {
     "owner": "coco",
@@ -1427,9 +1458,9 @@ export const CAMPAIGN_CASES = [
    "vera": 0,
    "wren": 13,
    "indigo": 22,
+   "v_fontaine": 29,
    "coco": 32,
-   "prudence": 9,
-   "v_fontaine": 29
+   "prudence": 9
   },
   "murderer": "indigo",
   "difficulty": "medium"
@@ -1439,46 +1470,46 @@ export const CAMPAIGN_CASES = [
   "title": "Last Voyage of the SS Meridian",
   "size": 6,
   "roomOf": [
+   1,
+   1,
+   1,
+   1,
+   4,
+   4,
+   1,
+   1,
+   1,
+   2,
+   4,
+   4,
    0,
    0,
+   0,
+   2,
+   2,
+   2,
+   0,
+   0,
+   0,
+   0,
+   2,
+   2,
    0,
    3,
+   3,
+   3,
+   3,
    2,
-   2,
-   1,
-   1,
    0,
    3,
-   2,
-   2,
-   1,
-   1,
-   4,
    3,
-   2,
-   2,
-   1,
-   1,
-   4,
-   4,
-   4,
-   2,
-   1,
-   1,
-   4,
-   4,
-   4,
-   2,
-   1,
-   1,
-   4,
-   4,
-   4,
+   3,
+   3,
    2
   ],
   "rooms": [
    {
-    "name": "Salon",
+    "name": "Engine Room",
     "hue": 0
    },
    {
@@ -1486,36 +1517,36 @@ export const CAMPAIGN_CASES = [
     "hue": 72
    },
    {
-    "name": "Engine Room",
+    "name": "Salon",
     "hue": 144
    },
    {
-    "name": "Cargo Hold",
+    "name": "Bridge",
     "hue": 216
    },
    {
-    "name": "Bridge",
+    "name": "Cargo Hold",
     "hue": 288
    }
   ],
   "furniture": {
-   "1": {
-    "type": "wheel"
+   "0": {
+    "type": "lantern"
    },
-   "9": {
+   "1": {
+    "type": "crate"
+   },
+   "4": {
+    "type": "lantern"
+   },
+   "8": {
     "type": "armchair"
    },
-   "17": {
-    "type": "clock"
+   "20": {
+    "type": "armchair"
    },
-   "18": {
-    "type": "clock"
-   },
-   "21": {
-    "type": "wheel"
-   },
-   "28": {
-    "type": "wheel"
+   "25": {
+    "type": "crate"
    }
   },
   "people": [
@@ -1565,69 +1596,60 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "coco",
+    "owner": "felix",
+    "kind": "dir_of_person",
+    "other": "coco",
+    "dir": "south"
+   },
+   {
+    "owner": "ash",
+    "kind": "in_room",
+    "room": 1
+   },
+   {
+    "owner": "v_pemberly",
+    "kind": "dir_of_object",
+    "objType": "armchair",
+    "dir": "west"
+   },
+   {
+    "owner": "v_pemberly",
     "kind": "dir_of_person",
     "other": "basil",
     "dir": "north"
+   },
+   {
+    "owner": "indigo",
+    "kind": "dir_of_person",
+    "other": "felix",
+    "dir": "north"
+   },
+   {
+    "owner": "basil",
+    "kind": "same_col_object",
+    "objType": "lantern"
+   },
+   {
+    "owner": "coco",
+    "kind": "not_in_room",
+    "room": 2
+   },
+   {
+    "owner": "v_pemberly",
+    "kind": "dir_of_person",
+    "other": "felix",
+    "dir": "south"
    },
    {
     "owner": "coco",
     "kind": "same_row_object",
-    "objType": "wheel"
-   },
-   {
-    "owner": "indigo",
-    "kind": "not_beside_object",
-    "objType": "armchair"
-   },
-   {
-    "owner": "coco",
-    "kind": "same_col_object",
-    "objType": "wheel"
-   },
-   {
-    "owner": "ash",
-    "kind": "same_col_object",
     "objType": "armchair"
    },
    {
     "owner": "indigo",
-    "kind": "not_same_room_person",
-    "other": "coco"
-   },
-   {
-    "owner": "basil",
-    "kind": "in_room",
-    "room": 4
-   },
-   {
-    "owner": "basil",
-    "kind": "not_same_room_person",
-    "other": "coco"
-   },
-   {
-    "owner": "basil",
-    "kind": "dir_of_person",
-    "other": "ash",
-    "dir": "south"
-   },
-   {
-    "owner": "v_pemberly",
-    "kind": "dir_of_object",
-    "objType": "armchair",
-    "dir": "east"
-   },
-   {
-    "owner": "felix",
-    "kind": "dir_of_object",
-    "objType": "armchair",
-    "dir": "north"
-   },
-   {
-    "owner": "v_pemberly",
     "kind": "dir_of_person",
     "other": "basil",
-    "dir": "south"
+    "dir": "east"
    }
   ],
   "givens": {},
@@ -1776,14 +1798,14 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "ash": 15,
-   "felix": 0,
-   "coco": 19,
-   "basil": 26,
-   "v_pemberly": 34,
-   "indigo": 11
+   "ash": 2,
+   "coco": 7,
+   "v_pemberly": 24,
+   "basil": 34,
+   "indigo": 17,
+   "felix": 21
   },
-  "murderer": "basil",
+  "murderer": "felix",
   "difficulty": "medium"
  },
  {
@@ -1791,67 +1813,67 @@ export const CAMPAIGN_CASES = [
   "title": "The Thorn Garden Party",
   "size": 7,
   "roomOf": [
-   4,
-   4,
-   4,
-   4,
    3,
    3,
+   3,
+   2,
+   2,
+   0,
+   0,
+   3,
+   3,
+   2,
+   2,
+   2,
+   2,
+   0,
+   3,
+   3,
+   4,
+   2,
    1,
-   4,
-   4,
-   4,
+   2,
+   0,
    3,
-   3,
-   1,
-   1,
    4,
    4,
-   4,
-   3,
    1,
    1,
    1,
+   0,
    4,
-   3,
-   3,
-   3,
+   4,
+   4,
+   1,
+   1,
    0,
    0,
+   4,
+   4,
+   4,
+   1,
+   1,
    0,
-   3,
-   3,
-   3,
    0,
+   4,
+   4,
+   1,
+   1,
+   1,
    0,
-   0,
-   0,
-   2,
-   2,
-   2,
-   2,
-   0,
-   2,
-   2,
-   2,
-   2,
-   2,
-   2,
-   2,
-   2,
-   2
+   0
   ],
   "rooms": [
    {
-    "name": "Gazebo",
+    "name": "Apiary",
     "hue": 0
    },
    {
-    "name": "Greenhouse",
+    "name": "Gazebo",
     "hue": 72
    },
    {
-    "name": "Apiary",
+    "name": "Rose Maze",
     "hue": 144
    },
    {
@@ -1859,34 +1881,34 @@ export const CAMPAIGN_CASES = [
     "hue": 216
    },
    {
-    "name": "Rose Maze",
+    "name": "Greenhouse",
     "hue": 288
    }
   ],
   "furniture": {
-   "5": {
+   "6": {
+    "type": "beehive"
+   },
+   "15": {
     "type": "fern"
    },
-   "17": {
-    "type": "fern"
+   "19": {
+    "type": "beehive"
    },
-   "18": {
+   "21": {
     "type": "statue"
    },
    "25": {
-    "type": "plant"
+    "type": "beehive"
    },
-   "30": {
-    "type": "fern"
-   },
-   "31": {
+   "26": {
     "type": "fountain"
    },
-   "35": {
-    "type": "fern"
+   "40": {
+    "type": "fountain"
    },
-   "43": {
-    "type": "statue"
+   "41": {
+    "type": "fern"
    }
   },
   "people": [
@@ -1943,6 +1965,36 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
+    "owner": "prudence",
+    "kind": "dir_of_person",
+    "other": "indigo",
+    "dir": "east"
+   },
+   {
+    "owner": "wren",
+    "kind": "edge",
+    "dir": "south"
+   },
+   {
+    "owner": "vera",
+    "kind": "alone"
+   },
+   {
+    "owner": "wren",
+    "kind": "dir_of_object",
+    "objType": "fern",
+    "dir": "west"
+   },
+   {
+    "owner": "felix",
+    "kind": "in_room",
+    "room": 1
+   },
+   {
+    "owner": "basil",
+    "kind": "alone"
+   },
+   {
     "owner": "basil",
     "kind": "dir_of_person",
     "other": "felix",
@@ -1950,64 +2002,20 @@ export const CAMPAIGN_CASES = [
    },
    {
     "owner": "v_thorn",
-    "kind": "dir_of_object",
-    "objType": "statue",
-    "dir": "east"
-   },
-   {
-    "owner": "prudence",
-    "kind": "not_beside_object",
-    "objType": "fern"
-   },
-   {
-    "owner": "prudence",
-    "kind": "dir_of_person",
-    "other": "v_thorn",
-    "dir": "east"
-   },
-   {
-    "owner": "vera",
-    "kind": "same_col_object",
-    "objType": "fern"
-   },
-   {
-    "owner": "wren",
     "kind": "not_same_room_person",
-    "other": "indigo"
+    "other": "prudence"
    },
    {
     "owner": "indigo",
-    "kind": "dir_of_object",
-    "objType": "fountain",
-    "dir": "north"
-   },
-   {
-    "owner": "vera",
-    "kind": "dir_of_object",
-    "objType": "fountain",
+    "kind": "dir_of_person",
+    "other": "felix",
     "dir": "south"
    },
    {
-    "owner": "felix",
-    "kind": "beside_object",
-    "objType": "plant"
-   },
-   {
-    "owner": "wren",
+    "owner": "indigo",
     "kind": "dir_of_person",
     "other": "felix",
-    "dir": "west"
-   },
-   {
-    "owner": "indigo",
-    "kind": "dir_of_object",
-    "objType": "statue",
-    "dir": "west"
-   },
-   {
-    "owner": "v_thorn",
-    "kind": "same_row_object",
-    "objType": "plant"
+    "dir": "east"
    }
   ],
   "givens": {},
@@ -2156,15 +2164,15 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "v_thorn": 26,
-   "felix": 32,
-   "indigo": 0,
-   "vera": 44,
-   "prudence": 20,
-   "wren": 10,
-   "basil": 36
+   "wren": 42,
+   "felix": 24,
+   "vera": 1,
+   "prudence": 12,
+   "basil": 34,
+   "indigo": 39,
+   "v_thorn": 16
   },
-  "murderer": "felix",
+  "murderer": "wren",
   "difficulty": "hard"
  },
  {
@@ -2323,6 +2331,12 @@ export const CAMPAIGN_CASES = [
    }
   ],
   "clues": [
+   {
+    "owner": "prudence",
+    "kind": "dir_of_person",
+    "other": "coco",
+    "dir": "south"
+   },
    {
     "owner": "felix",
     "kind": "dir_of_person",

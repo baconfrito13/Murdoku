@@ -14,8 +14,9 @@ cases, characters, art and writing.
 3. Every person's card lists **clues**, and *every clue must be true* in the final
    layout. Clue vocabulary:
    - **Rooms** — "was in the Library" / "was not in the Kitchen"
-   - **Objects** — "was beside a bookshelf" (*beside* = orthogonally adjacent,
-     never diagonal), "was not beside a candle", "in the same row/column as the stove"
+   - **Objects** — "was beside a bookshelf" (*beside* = orthogonally adjacent
+     AND in the same room — never diagonal, never across a wall),
+     "was not beside a candle", "in the same row/column as the stove"
    - **Directions** — "was north/south/east/west of X" (strictly higher/lower
      row or column on the map; south = lower on the map)
    - **Relationships** — "was beside Y", "was in the same room as Y",

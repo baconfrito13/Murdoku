@@ -136,9 +136,11 @@ function buildCluePool(rng, cse, solution, objTypes) {
     const notRooms = rng.shuffle([...Array(roomCount).keys()].filter((r) => r !== myRoom));
     for (const r of notRooms.slice(0, 2)) push({ owner: p.id, kind: 'not_in_room', room: r });
 
-    // objects
+    // objects ("beside" = adjacent AND same room, per the book rule)
     const adjTypes = new Set(
-      neighbors4(cell, n).filter((nb) => cse.furniture[nb]).map((nb) => cse.furniture[nb].type),
+      neighbors4(cell, n)
+        .filter((nb) => cse.furniture[nb] && cse.roomOf[nb] === myRoom)
+        .map((nb) => cse.furniture[nb].type),
     );
     for (const t of adjTypes) push({ owner: p.id, kind: 'beside_object', objType: t });
     for (const t of objTypes) {
@@ -184,7 +186,8 @@ function buildCluePool(rng, cse, solution, objTypes) {
       if (rowOf(cell, n) > rowOf(other, n)) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'south' });
       if (colOf(cell, n) < colOf(other, n)) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'west' });
       if (colOf(cell, n) > colOf(other, n)) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'east' });
-      if (neighbors4(cell, n).includes(other)) push({ owner: p.id, kind: 'beside_person', other: q.id });
+      const besideQ = neighbors4(cell, n).includes(other) && cse.roomOf[other] === myRoom;
+      if (besideQ) push({ owner: p.id, kind: 'beside_person', other: q.id });
       else if (rng.chance(0.5)) push({ owner: p.id, kind: 'not_beside_person', other: q.id });
       if (cse.roomOf[other] === myRoom) push({ owner: p.id, kind: 'same_room_person', other: q.id });
       else if (rng.chance(0.5)) push({ owner: p.id, kind: 'not_same_room_person', other: q.id });
@@ -239,12 +242,30 @@ function selectClues(rng, cse, pool, { maxPerPerson = 3, restarts = 10 } = {}) {
     }
     if (!done && !uniqueAndFair()) continue;
 
-    // Minimization: drop any clue whose removal preserves both guarantees.
+    // Minimization: drop any clue whose removal preserves both guarantees —
+    // but never strip a character's last statement (book cards always carry
+    // at least one clue).
+    const ownerCount = () => {
+      const m = new Map(cse.people.map((p) => [p.id, 0]));
+      for (const c of chosen) m.set(c.owner, m.get(c.owner) + 1);
+      return m;
+    };
     for (const clue of rng.shuffle(chosen.slice())) {
+      if (ownerCount().get(clue.owner) <= 1) continue;
       const i = chosen.indexOf(clue);
       chosen.splice(i, 1);
       if (!uniqueAndFair()) chosen.splice(i, 0, clue);
     }
+
+    // Top-up: anyone left with no statement gets one true (harmless) clue —
+    // adding true clues can never break uniqueness or fairness.
+    const counts = ownerCount();
+    for (const p of cse.people) {
+      if (counts.get(p.id) > 0) continue;
+      const candidates = rng.shuffle(pool.filter((c) => c.owner === p.id));
+      if (candidates.length) chosen.push(candidates[0]);
+    }
+    if (!uniqueAndFair()) continue;
 
     return chosen;
   }
@@ -298,18 +319,9 @@ export function generateCase(config) {
     if (!clues) continue;
     cse.clues = clues;
 
-    // Givens: easy cases pre-place the victim (classic "the body was found in…").
-    if (difficulty === 'easy') {
-      const victim = victimOf(cse);
-      cse.givens[victim.id] = solutionMap.get(victim.id);
-      // Remove clues that became redundant, re-checking guarantees.
-      for (const clue of rng.shuffle(cse.clues.slice())) {
-        const i = cse.clues.indexOf(clue);
-        cse.clues.splice(i, 1);
-        const sols = countSolutions(cse, { limit: 2 });
-        if (sols.length !== 1 || !logicSolve(cse).solved) cse.clues.splice(i, 0, clue);
-      }
-    }
+    // Book convention: the victim is placed by the solver like everyone else —
+    // no pre-placed givens. (The givens mechanism stays for possible guided
+    // tutorials, but shipped cases don't use it.)
 
     // FINAL verification of every guarantee (belt and braces).
     const sols = countSolutions(cse, { limit: 2 });
