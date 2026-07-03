@@ -1,0 +1,13 @@
+{
+  "name": "murdoku",
+  "version": "1.0.0",
+  "description": "Murdoku — sudoku-style murder mystery logic puzzles in the browser",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "npx http-server -p 8080 -c-1 .",
+    "test": "node --test tests/engine.test.mjs",
+    "e2e": "node e2e/game.e2e.mjs",
+    "build": "node scripts/build-cases.mjs"
+  }
+}
