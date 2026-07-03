@@ -186,7 +186,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
 }
 .cell.floor { cursor: pointer; }
 .cell.floor:hover { filter: brightness(.94); }
-.cell:focus-visible { z-index: 3; outline-offset: -3px; }
+/* the ::before layer beats the wall borders, so the ring is never clipped */
+.cell:focus-visible { outline: none; }
+.cell:focus-visible::before { box-shadow: inset 0 0 0 3px var(--focus); }
 .cell.furniture { cursor: default; }
 .cell .furn { filter: saturate(.85); }
 .cell .xmark {
