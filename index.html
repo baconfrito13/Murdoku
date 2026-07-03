@@ -58,7 +58,8 @@
 
     <div class="game-layout">
       <div class="board-wrap">
-        <div id="board" class="board" role="grid" aria-label="Crime scene map"></div>
+        <div id="chip-strip" class="chip-strip" aria-label="Quick suspect picker"></div>
+        <div id="board" class="board" role="group" aria-label="Crime scene map"></div>
         <div class="board-legend" id="board-legend" aria-hidden="true"></div>
       </div>
 
@@ -78,7 +79,7 @@
       <button id="tool-check" class="tool-btn" title="Check the board">✓<span class="tool-label">Check</span></button>
       <button id="tool-hint" class="tool-btn" title="Get a reasoned hint (H)">💡<span class="tool-label">Hint</span></button>
       <button id="tool-restart" class="tool-btn" title="Restart the case">⟲<span class="tool-label">Reset</span></button>
-      <button id="tool-accuse" class="accuse-btn" disabled title="Place everyone validly to accuse">⚖️ Accuse</button>
+      <button id="tool-accuse" class="accuse-btn" aria-disabled="true" title="Place everyone validly to accuse">⚖️ Accuse</button>
     </div>
 
     <div class="settings-row">
@@ -117,8 +118,17 @@
   <h2>🔍 A deduction</h2>
   <p id="hint-text" class="story-text"></p>
   <div class="dlg-actions">
-    <button class="ghost-btn" data-close>Let me think</button>
+    <button class="ghost-btn" data-close>Keep it to myself</button>
     <button id="hint-apply" class="primary-btn">Show me on the map</button>
+  </div>
+</dialog>
+
+<dialog id="dlg-confirm" class="dlg">
+  <h2 id="confirm-title">Are you sure?</h2>
+  <p id="confirm-text" class="story-text"></p>
+  <div class="dlg-actions">
+    <button class="ghost-btn" data-close>Cancel</button>
+    <button id="confirm-yes" class="primary-btn">Yes, do it</button>
   </div>
 </dialog>
 
@@ -141,6 +151,9 @@
     </ol>
     <p class="help-note">Every case has <strong>exactly one solution</strong>, and none of them
       ever requires guessing — there is always a next deduction to find.</p>
+    <p class="help-kbd"><strong>Keyboard:</strong> arrows move around the map · <kbd>1</kbd>–<kbd>9</kbd>
+      select a person · <kbd>Enter</kbd> place · <kbd>X</kbd> cross out · <kbd>M</kbd> mark tool ·
+      <kbd>H</kbd> hint · <kbd>Ctrl</kbd>+<kbd>Z</kbd>/<kbd>Y</kbd> undo/redo · <kbd>Esc</kbd> cancel.</p>
   </div>
   <div class="dlg-actions"><button class="primary-btn" data-close>Got it</button></div>
 </dialog>

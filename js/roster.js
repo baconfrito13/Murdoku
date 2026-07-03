@@ -161,7 +161,7 @@ export const CAMPAIGN_BRIEFS = [
     },
   },
   {
-    id: 'c08', size: 7, theme: 'museum', difficulty: 'hard', seed: 'murdoku-c08-v0',
+    id: 'c08', size: 7, theme: 'museum', difficulty: 'hard', seed: 'murdoku-c08-v0-v2',
     suspects: ['wren', 'vera', 'ash', 'prudence', 'coco', 'felix'],
     victim: { id: 'v_locke', name: 'Curator Maximilian Locke', role: 'the museum curator', emoji: '🗝️', isVictim: true, color: '#94a3b8' },
     story: {

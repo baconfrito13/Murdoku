@@ -1,7 +1,7 @@
 // Game screen controller: wires board, dock, toolbar, timer, dialogs.
 
 import { qs, el, toast, announce, openDialog, confettiBurst } from './dom.js';
-import { GameState, progress, settings } from './state.js';
+import { GameState, progress, settings, transientCases } from './state.js';
 import { BoardView } from './board.js';
 import { DockView } from './cards.js';
 import { rowOf, colOf, rowColConflicts, victimOf, impliedMurderer } from '../engine/model.js';
@@ -34,9 +34,18 @@ export class GameScreen {
     live.addEventListener('change', () => { settings.set({ live: live.checked }); this.refresh(); });
     autox.addEventListener('change', () => { settings.set({ autox: autox.checked }); this.refresh(); });
 
+    // pause the clock while the brief is open
+    qs('#dlg-story').addEventListener('close', () => {
+      if (this.state && !this.state.finished && !qs('#screen-game').hidden) this.startTimer();
+    });
+
     document.addEventListener('keydown', (e) => this.onKey(e));
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) this.pauseTimer(); else if (this.state && !this.state.finished) this.startTimer();
+      if (document.hidden) { this.pauseTimer(); return; }
+      // only resume when the game screen is actually up and the brief closed
+      const gameVisible = !qs('#screen-game').hidden;
+      const briefOpen = qs('#dlg-story').open;
+      if (gameVisible && !briefOpen && this.state && !this.state.finished) this.startTimer();
     });
     this.xMode = false;
   }
@@ -64,6 +73,8 @@ export class GameScreen {
     this.dock = new DockView(qs('#dock'), cse, {
       onArm: (pid) => this.arm(pid),
     });
+    this.renderChipStrip();
+    this.wasReady = false;
 
     this.refresh();
     this.startTimer();
@@ -74,7 +85,7 @@ export class GameScreen {
 
   exit() {
     this.pauseTimer();
-    this.state?.save();
+    if (this.state && !this.state.finished) this.state.save();
     this.onExit();
   }
 
@@ -89,6 +100,23 @@ export class GameScreen {
     if (this.armed && this.xMode) this.toggleXMode(false);
     const p = this.case.people.find((x) => x.id === pid);
     announce(this.armed ? `${p.name} selected. Choose a square.` : 'Selection cleared.');
+    this.refresh();
+  }
+
+  // Cancel the current selection; if the selected person was just picked up
+  // off the board, put them back where they were.
+  cancelSelection() {
+    if (this.armed && this.state.placement.get(this.armed) == null) {
+      const last = this.state.undoStack[this.state.undoStack.length - 1];
+      if (last && last.type === 'place' && last.pid === this.armed
+        && last.cell == null && last.prev != null) {
+        this.state.undo();
+        this.state.redoStack.length = 0;
+        this.state.save();
+        announce('Selection cancelled — returned to their square.');
+      }
+    }
+    this.armed = null;
     this.refresh();
   }
 
@@ -160,13 +188,20 @@ export class GameScreen {
   }
 
   restart() {
-    if (!confirm('Clear the board and start this case over?')) return;
-    this.state.clearSave();
-    const cse = this.case;
-    this.state = new GameState(cse);
-    this.armed = null;
-    this.refresh();
-    toast('A fresh start. The truth is still in there.');
+    qs('#confirm-title').textContent = 'Start over?';
+    qs('#confirm-text').textContent = 'This clears every placement and ✕ on the board. The case stays the same.';
+    const yes = qs('#confirm-yes');
+    yes.textContent = 'Clear the board';
+    yes.onclick = () => {
+      qs('#dlg-confirm').close();
+      this.state.clearSave();
+      this.state = new GameState(this.case);
+      this.armed = null;
+      this.wasReady = false;
+      this.refresh();
+      toast('A fresh start. The truth is still in there.');
+    };
+    openDialog(qs('#dlg-confirm'));
   }
 
   afterMove() {
@@ -211,7 +246,18 @@ export class GameScreen {
     this.computeAutoMarks();
     const conflicts = live ? this.conflictCells() : new Set();
     this.board.update(this.state, { conflicts, armed: this.armed });
+    this.board.host.classList.toggle('arming', this.armed != null);
     this.dock.update(this.state, { armed: this.armed, liveCheck: live });
+    this.updateChipStrip();
+
+    // dock header doubles as a "holding …" indicator
+    const hint = qs('.side-hint');
+    if (this.armed) {
+      const p = this.case.people.find((x) => x.id === this.armed);
+      hint.textContent = `placing ${p.name.split(' ')[0]} — tap a square (Esc cancels)`;
+    } else {
+      hint.textContent = 'select, then tap the map';
+    }
 
     qs('#tool-undo').disabled = this.state.undoStack.length === 0;
     qs('#tool-redo').disabled = this.state.redoStack.length === 0;
@@ -220,10 +266,41 @@ export class GameScreen {
       && this.conflictCells().size === 0
       && this.violatedClues().length === 0;
     const accuse = qs('#tool-accuse');
-    accuse.disabled = !ready;
+    // aria-disabled (not disabled) so touch users still get feedback on tap
+    accuse.setAttribute('aria-disabled', String(!ready));
     accuse.title = ready
       ? 'Name the murderer'
       : 'Place everyone with no conflicts and no broken clues first';
+    if (ready && !this.wasReady && !this.state.finished) {
+      toast('Everything checks out. Time to point a finger…', 'good');
+    }
+    this.wasReady = ready;
+  }
+
+  // ---------- mobile quick-picker strip ----------
+  renderChipStrip() {
+    const strip = qs('#chip-strip');
+    strip.innerHTML = '';
+    this.chips = new Map();
+    for (const p of this.case.people) {
+      const chip = el('button', {
+        class: 'strip-chip', 'aria-pressed': 'false',
+        'aria-label': `Select ${p.name}`,
+        onclick: () => this.arm(p.id),
+      },
+        el('span', { class: 'avatar', style: { '--pawn-color': p.color ?? '#8a8a8a' }, 'aria-hidden': 'true' }, p.emoji),
+        el('span', { class: 'strip-name' }, p.name.split(' ')[0] + (p.isVictim ? ' †' : '')));
+      this.chips.set(p.id, chip);
+      strip.append(chip);
+    }
+  }
+
+  updateChipStrip() {
+    if (!this.chips) return;
+    for (const [pid, chip] of this.chips) {
+      chip.setAttribute('aria-pressed', String(this.armed === pid));
+      chip.classList.toggle('placed-chip', this.state.placement.get(pid) != null);
+    }
   }
 
   // ---------- check / hint ----------
@@ -280,12 +357,20 @@ export class GameScreen {
 
   // ---------- story / accusation / verdict ----------
   showStory() {
+    this.pauseTimer();
     qs('#dlg-story-title').textContent = this.case.title;
     qs('#dlg-story-text').textContent = this.case.story?.intro ?? '';
     openDialog(qs('#dlg-story'));
   }
 
   openAccusation() {
+    if (qs('#tool-accuse').getAttribute('aria-disabled') === 'true') {
+      const placed = [...this.state.placement.values()].filter((c) => c != null).length;
+      toast(placed < this.case.people.length
+        ? `Place everyone first — ${placed}/${this.case.people.length} on the map.`
+        : 'Fix the conflicts and broken clues first — the jury wants a flawless map.', 'error');
+      return;
+    }
     const lineup = qs('#accuse-lineup');
     lineup.innerHTML = '';
     for (const p of this.case.people) {
@@ -330,6 +415,7 @@ export class GameScreen {
     this.pauseTimer();
     progress.markSolved(this.case.id);
     this.state.clearSave();
+    if (transientCases.load()?.id === this.case.id) transientCases.clear();
 
     const story = this.case.story?.reveal ?? '{murderer} did it.';
     const text = story
@@ -385,7 +471,7 @@ export class GameScreen {
     if (e.target.matches('input, textarea')) return;
     if (document.querySelector('dialog[open]')) return;
 
-    if (e.key === 'Escape') { this.armed = null; this.refresh(); return; }
+    if (e.key === 'Escape') { this.cancelSelection(); return; }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); this.undo(); return; }
     if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) { e.preventDefault(); this.redo(); return; }
     if (e.key.toLowerCase() === 'h') { this.hint(); return; }

@@ -198,15 +198,21 @@ function buildCluePool(rng, cse, solution, objTypes) {
     if (occupants.length === 1) push({ owner: p.id, kind: 'alone' });
   }
 
-  // Never leak the murder directly: drop same_room_person clues that pair the
-  // victim with the murderer (in either direction) — finding that pair IS the game.
+  // Never leak the murder directly — finding who shared the victim's room IS
+  // the game:
+  //  - no same_room_person clue pairing the victim with the murderer;
+  //  - the murderer's cards never say "was in <the victim's room>" (paired
+  //    with the victim's own in_room clue, that names the killer outright).
   const victim = victimOf(cse);
   const vRoom = cse.roomOf[at(victim.id)];
   const murderer = people.find((p) => !p.isVictim && cse.roomOf[at(p.id)] === vRoom);
   return pool.filter((c) => {
-    if (c.kind !== 'same_room_person') return true;
-    const pair = new Set([c.owner, c.other]);
-    return !(pair.has(victim.id) && pair.has(murderer.id));
+    if (c.kind === 'same_room_person') {
+      const pair = new Set([c.owner, c.other]);
+      return !(pair.has(victim.id) && pair.has(murderer.id));
+    }
+    if (c.kind === 'in_room' && c.owner === murderer.id && c.room === vRoom) return false;
+    return true;
   });
 }
 

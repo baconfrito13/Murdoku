@@ -68,6 +68,14 @@ try {
   const furnCount = await page.locator('#board .cell.furniture').count();
   check(furnCount === Object.keys(case1.furniture).length, 'furniture rendered');
 
+  // tapping Accuse while gated must explain itself instead of doing nothing
+  const accuse = page.locator('#tool-accuse');
+  check(await accuse.getAttribute('aria-disabled') === 'true', 'accuse starts gated');
+  await accuse.click({ force: true }); // Playwright treats aria-disabled as non-actionable
+  check(await page.locator('#dlg-accuse[open]').count() === 0, 'gated accuse does not open lineup');
+  check((await page.locator('#toast').textContent()).includes('Place everyone first'),
+    'gated accuse explains why (works on touch too)');
+
   // X-mark via right-click on some empty floor cell (not a solution cell)
   const solutionCells = new Set(Object.values(case1.solution));
   const givenPids = new Set(Object.keys(case1.givens ?? {}));
@@ -112,8 +120,8 @@ try {
   await page.screenshot({ path: `${SHOTS}02-board-solved.png`, fullPage: true });
 
   // accuse the murderer
-  const accuse = page.locator('#tool-accuse');
-  check(await accuse.isEnabled(), 'accuse button unlocks when board is valid');
+  check(await accuse.getAttribute('aria-disabled') === 'false',
+    'accuse button unlocks when board is valid');
   await accuse.click();
   await page.waitForSelector('#dlg-accuse[open]');
   await page.click(`#accuse-lineup .lineup-btn:has-text("${

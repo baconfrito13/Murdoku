@@ -37,6 +37,8 @@ cases, characters, art and writing.
   capacity reasoning). This is also what powers **hints**.
 - **Exactly one suspect** shares the victim's room in the solution, so the
   murderer is always well defined.
+- **No card ever leaks the answer**: no clue pairs the victim and the murderer
+  in the same room, and the murderer's cards never name the victim's room.
 
 ## Architecture
 

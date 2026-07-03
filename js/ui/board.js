@@ -37,7 +37,6 @@ export class BoardView {
 
         const btn = el('button', {
           class: `cell ${furn ? 'furniture' : 'floor'}`,
-          role: 'gridcell',
           dataset: { cell: String(cell) },
           'aria-label': this.cellLabel(cell),
           tabindex: r === 0 && c === 0 ? '0' : '-1',
@@ -65,15 +64,21 @@ export class BoardView {
         }
 
         btn.addEventListener('click', () => this.cb.onCellActivate(cell, { alt: false }));
+        // Long-press = alt action on touch. Android also fires `contextmenu`
+        // at ~500ms during a long-press, so the two paths must not both run:
+        // the timer sets `longPressAt` and the contextmenu handler ignores
+        // events arriving shortly after it.
+        let pressTimer = null;
+        let longPressAt = 0;
         btn.addEventListener('contextmenu', (e) => {
           e.preventDefault();
+          if (Date.now() - longPressAt < 900) return; // already handled by long-press
           this.cb.onCellActivate(cell, { alt: true });
         });
-        // long-press = alt action on touch
-        let pressTimer = null;
         btn.addEventListener('touchstart', () => {
           pressTimer = setTimeout(() => {
             pressTimer = null;
+            longPressAt = Date.now();
             this.cb.onCellActivate(cell, { alt: true, fromLongPress: true });
           }, 480);
         }, { passive: true });

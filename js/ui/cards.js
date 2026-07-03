@@ -20,8 +20,7 @@ export class DockView {
       const clues = this.case.clues.filter((c) => c.owner === person.id);
       const card = el('button', {
         class: `suspect-card ${person.isVictim ? 'victim-card' : ''}`,
-        role: 'option',
-        'aria-selected': 'false',
+        'aria-pressed': 'false',
         dataset: { pid: person.id },
         onclick: () => this.cb.onArm(person.id),
       },
@@ -35,7 +34,10 @@ export class DockView {
           ? el('ul', { class: 'clue-list' }, clues.map((clue) => el('li', {
             class: 'clue-item',
             dataset: { clue: JSON.stringify(clue) },
-          }, el('span', { class: 'clue-quote' }, `“${clueText(this.case, clue, OBJECT_NAMES)}”`))))
+          },
+            el('span', { class: 'clue-state', 'aria-hidden': 'true' }, ''),
+            el('span', { class: 'visually-hidden clue-sr' }, ''),
+            el('span', { class: 'clue-quote' }, `“${clueText(this.case, clue, OBJECT_NAMES)}”`))))
           : el('div', { class: 'clue-list no-clue' }, person.isVictim
             ? 'The dead keep their secrets.'
             : 'No statement given.'),
@@ -49,18 +51,29 @@ export class DockView {
     for (const person of this.case.people) {
       const card = this.cards.get(person.id);
       const placed = state.placement.get(person.id) != null;
-      card.setAttribute('aria-selected', String(armed === person.id));
+      card.setAttribute('aria-pressed', String(armed === person.id));
       card.classList.toggle('placed-card', placed);
       const status = card.querySelector('.suspect-status');
       status.textContent = state.isGiven(person.id) ? '📌' : placed ? '📍' : '';
 
       for (const li of card.querySelectorAll('.clue-item')) {
         li.classList.remove('ok', 'bad');
+        const stateGlyph = li.querySelector('.clue-state');
+        const sr = li.querySelector('.clue-sr');
+        stateGlyph.textContent = '';
+        sr.textContent = '';
         if (!liveCheck) continue;
         const clue = JSON.parse(li.dataset.clue);
         const verdict = evalClue(this.case, clue, state.placement);
-        if (verdict === true) li.classList.add('ok');
-        else if (verdict === false) li.classList.add('bad');
+        if (verdict === true) {
+          li.classList.add('ok');
+          stateGlyph.textContent = '✓';
+          sr.textContent = 'statement holds: ';
+        } else if (verdict === false) {
+          li.classList.add('bad');
+          stateGlyph.textContent = '✗';
+          sr.textContent = 'statement broken: ';
+        }
       }
     }
   }

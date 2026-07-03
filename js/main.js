@@ -1,7 +1,7 @@
 // App bootstrap: home screen, routing between screens, theme, dialogs.
 
 import { qs, el, toast, wireDialogClose, openDialog } from './ui/dom.js';
-import { settings, progress } from './ui/state.js';
+import { settings, progress, transientCases, pruneStaleSaves } from './ui/state.js';
 import { GameScreen } from './ui/game.js';
 import { CAMPAIGN_CASES } from './cases-data.js';
 import { makeDailyCase, makeRandomCase } from './daily.js';
@@ -13,6 +13,7 @@ const screens = {
 
 function show(name) {
   for (const [key, node] of Object.entries(screens)) node.hidden = key !== name;
+  qs('#confetti').innerHTML = ''; // never let a celebration bleed into the next screen
   window.scrollTo({ top: 0 });
 }
 
@@ -36,6 +37,23 @@ function renderHome() {
   const list = qs('#campaign-list');
   list.innerHTML = '';
   const solved = progress.solvedSet();
+
+  // Unfinished generated case? Offer to pick it back up.
+  const transient = transientCases.load();
+  if (transient && progress.hasUnfinished(transient.id)) {
+    list.append(el('button', {
+      class: 'case-card', role: 'listitem',
+      onclick: () => startCase(transient),
+    },
+      el('span', { class: 'case-num' }, 'OPEN INVESTIGATION'),
+      el('span', { class: 'case-name' }, transient.title),
+      el('span', { class: 'case-tags' },
+        el('span', { class: `chip ${transient.difficulty}` }, difficultyLabel(transient.difficulty)),
+        el('span', { class: 'chip' }, `${transient.size}×${transient.size}`),
+        el('span', { class: 'chip medium' }, '⏳ in progress')),
+    ));
+  }
+
   CAMPAIGN_CASES.forEach((cse, i) => {
     const card = el('button', {
       class: 'case-card', role: 'listitem',
@@ -46,7 +64,8 @@ function renderHome() {
       el('span', { class: 'case-tags' },
         el('span', { class: `chip ${cse.difficulty}` }, difficultyLabel(cse.difficulty)),
         el('span', { class: 'chip' }, `${cse.size}×${cse.size}`),
-        solved.has(cse.id) ? el('span', { class: 'chip solved' }, '✓ solved') : null),
+        solved.has(cse.id) ? el('span', { class: 'chip solved' }, '✓ solved')
+          : progress.hasUnfinished(cse.id) ? el('span', { class: 'chip medium' }, '⏳ in progress') : null),
     );
     list.append(card);
   });
@@ -74,7 +93,7 @@ qs('#btn-daily').addEventListener('click', () => {
   setTimeout(() => {
     try {
       const cse = makeDailyCase();
-      if (cse) startCase(cse);
+      if (cse) { transientCases.save(cse); startCase(cse); }
       else toast('Could not build today’s case — try a random one.', 'error');
     } finally {
       btn.disabled = false; btn.textContent = '🗓️ Today’s Case';
@@ -88,7 +107,7 @@ qs('#btn-random').addEventListener('click', () => {
   setTimeout(() => {
     try {
       const cse = makeRandomCase();
-      if (cse) startCase(cse, { resume: false });
+      if (cse) { transientCases.save(cse); startCase(cse, { resume: false }); }
       else toast('The generator came up empty — try again.', 'error');
     } finally {
       btn.disabled = false; btn.textContent = '🎲 Random Case';
@@ -103,6 +122,7 @@ qs('#btn-tutorial').addEventListener('click', () => {
 qs('#btn-help').addEventListener('click', () => openDialog(qs('#dlg-help')));
 
 // ---------- boot ----------
+pruneStaleSaves();
 wireDialogClose();
 applyTheme(settings.get().theme ?? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
 renderHome();

@@ -1,4 +1,4 @@
-// Engine test suite. Run: node --test tests/
+// Engine test suite. Run: npm test  (i.e. node --test tests/engine.test.mjs)
 //
 // The heart of it: EVERY shipped case must have exactly one solution, be
 // solvable without guessing, and imply exactly one murderer.
@@ -242,13 +242,18 @@ test('every campaign case: structural sanity', () => {
     for (const [pid, cell] of Object.entries(cse.givens ?? {})) {
       assert.equal(cse.solution[pid], cell, `${cse.id}: given contradicts solution`);
     }
-    // no same-room clue pairs victim with murderer (would leak the answer)
+    // no clue may leak the murderer: no same-room pairing of victim+murderer,
+    // and the murderer's cards never place them in the victim's room
     const victim = victimOf(cse);
+    const vRoom = cse.roomOf[cse.solution[victim.id]];
     for (const clue of cse.clues) {
       if (clue.kind === 'same_room_person') {
         const pair = new Set([clue.owner, clue.other]);
         assert.ok(!(pair.has(victim.id) && pair.has(cse.murderer)),
           `${cse.id}: clue leaks the murderer`);
+      }
+      if (clue.kind === 'in_room' && clue.owner === cse.murderer) {
+        assert.notEqual(clue.room, vRoom, `${cse.id}: murderer's card names the victim's room`);
       }
     }
   }

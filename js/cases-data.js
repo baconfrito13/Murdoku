@@ -82,9 +82,13 @@ export const CAMPAIGN_CASES = [
   "clues": [
    {
     "owner": "v_gilt",
-    "kind": "dir_of_person",
-    "other": "felix",
-    "dir": "east"
+    "kind": "not_in_room",
+    "room": 1
+   },
+   {
+    "owner": "ash",
+    "kind": "in_room",
+    "room": 1
    },
    {
     "owner": "ash",
@@ -92,10 +96,10 @@ export const CAMPAIGN_CASES = [
     "objType": "clock"
    },
    {
-    "owner": "ash",
-    "kind": "dir_of_person",
-    "other": "vera",
-    "dir": "east"
+    "owner": "felix",
+    "kind": "dir_of_object",
+    "objType": "armchair",
+    "dir": "south"
    },
    {
     "owner": "vera",
@@ -104,14 +108,9 @@ export const CAMPAIGN_CASES = [
     "dir": "south"
    },
    {
-    "owner": "ash",
-    "kind": "edge",
-    "dir": "south"
-   },
-   {
-    "owner": "felix",
-    "kind": "beside_object",
-    "objType": "clock"
+    "owner": "vera",
+    "kind": "not_beside_object",
+    "objType": "armchair"
    }
   ],
   "givens": {},
@@ -262,8 +261,8 @@ export const CAMPAIGN_CASES = [
   "solution": {
    "ash": 13,
    "felix": 10,
-   "vera": 4,
-   "v_gilt": 3
+   "v_gilt": 3,
+   "vera": 4
   },
   "murderer": "vera",
   "difficulty": "easy"
@@ -349,31 +348,29 @@ export const CAMPAIGN_CASES = [
   "clues": [
    {
     "owner": "basil",
+    "kind": "dir_of_person",
+    "other": "v_crumb",
+    "dir": "south"
+   },
+   {
+    "owner": "v_crumb",
     "kind": "in_room",
     "room": 2
    },
    {
     "owner": "coco",
-    "kind": "dir_of_person",
-    "other": "v_crumb",
+    "kind": "edge",
     "dir": "west"
    },
    {
     "owner": "prudence",
-    "kind": "dir_of_person",
-    "other": "coco",
-    "dir": "east"
+    "kind": "same_col_object",
+    "objType": "oven"
    },
    {
     "owner": "prudence",
-    "kind": "dir_of_object",
-    "objType": "cake",
-    "dir": "south"
-   },
-   {
-    "owner": "v_crumb",
     "kind": "edge",
-    "dir": "north"
+    "dir": "south"
    }
   ],
   "givens": {},
@@ -522,10 +519,10 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "v_crumb": 2,
    "prudence": 13,
-   "basil": 11,
-   "coco": 4
+   "coco": 4,
+   "v_crumb": 2,
+   "basil": 11
   },
   "murderer": "basil",
   "difficulty": "easy"
@@ -535,62 +532,62 @@ export const CAMPAIGN_CASES = [
   "title": "The Comet That Never Came",
   "size": 5,
   "roomOf": [
+   1,
+   1,
    2,
    2,
    2,
+   1,
+   1,
    2,
    2,
-   0,
-   0,
-   0,
    2,
    1,
+   1,
+   1,
    0,
    0,
+   3,
+   3,
+   3,
    0,
-   1,
-   1,
+   0,
    3,
    3,
    3,
-   1,
-   1,
-   3,
-   3,
-   3,
-   1,
-   1
+   0,
+   0
   ],
   "rooms": [
    {
-    "name": "Chart Room",
+    "name": "Stairwell",
     "hue": 0
    },
    {
-    "name": "Workshop",
+    "name": "Archive",
     "hue": 90
    },
    {
-    "name": "Stairwell",
+    "name": "Workshop",
     "hue": 180
    },
    {
-    "name": "Archive",
+    "name": "Dome",
     "hue": 270
    }
   ],
   "furniture": {
-   "7": {
-    "type": "telescope"
+   "3": {
+    "type": "desk"
    },
-   "10": {
-    "type": "lantern"
+   "4": {
+    "type": "bookshelf"
    },
-   "19": {
-    "type": "telescope"
-   },
-   "24": {
+   "8": {
     "type": "globe"
+   },
+   "12": {
+    "type": "bookshelf"
    }
   },
   "people": [
@@ -633,48 +630,48 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "felix",
-    "kind": "edge",
+    "owner": "vera",
+    "kind": "dir_of_object",
+    "objType": "globe",
     "dir": "west"
    },
    {
-    "owner": "felix",
-    "kind": "beside_object",
-    "objType": "lantern"
-   },
-   {
-    "owner": "vera",
-    "kind": "dir_of_person",
-    "other": "wren",
-    "dir": "south"
-   },
-   {
     "owner": "vera",
     "kind": "dir_of_person",
     "other": "wren",
     "dir": "east"
-   },
-   {
-    "owner": "wren",
-    "kind": "dir_of_person",
-    "other": "v_starr",
-    "dir": "east"
-   },
-   {
-    "owner": "indigo",
-    "kind": "same_col_object",
-    "objType": "telescope"
    },
    {
     "owner": "indigo",
     "kind": "same_row_object",
-    "objType": "telescope"
+    "objType": "bookshelf"
+   },
+   {
+    "owner": "felix",
+    "kind": "not_beside_object",
+    "objType": "globe"
+   },
+   {
+    "owner": "felix",
+    "kind": "dir_of_object",
+    "objType": "globe",
+    "dir": "west"
    },
    {
     "owner": "v_starr",
     "kind": "dir_of_person",
-    "other": "vera",
+    "other": "indigo",
     "dir": "west"
+   },
+   {
+    "owner": "felix",
+    "kind": "not_in_room",
+    "room": 1
+   },
+   {
+    "owner": "wren",
+    "kind": "edge",
+    "dir": "south"
    }
   ],
   "givens": {},
@@ -823,11 +820,11 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "felix": 5,
-   "indigo": 17,
-   "wren": 3,
-   "vera": 14,
-   "v_starr": 21
+   "wren": 20,
+   "indigo": 14,
+   "felix": 2,
+   "vera": 6,
+   "v_starr": 18
   },
   "murderer": "indigo",
   "difficulty": "easy"
@@ -840,40 +837,40 @@ export const CAMPAIGN_CASES = [
    3,
    3,
    3,
-   2,
-   2,
+   0,
    0,
    3,
    3,
+   3,
+   0,
+   0,
+   3,
+   1,
    2,
    2,
    0,
-   0,
-   0,
-   1,
-   2,
-   0,
    1,
    1,
    1,
    2,
-   0,
+   2,
    1,
    1,
    1,
+   2,
    2
   ],
   "rooms": [
    {
-    "name": "Back Office",
+    "name": "Terrace",
     "hue": 0
    },
    {
-    "name": "Gaming Floor",
+    "name": "Back Office",
     "hue": 90
    },
    {
-    "name": "Terrace",
+    "name": "Gaming Floor",
     "hue": 180
    },
    {
@@ -882,17 +879,17 @@ export const CAMPAIGN_CASES = [
    }
   ],
   "furniture": {
-   "2": {
-    "type": "cards"
+   "7": {
+    "type": "chandelier"
    },
-   "9": {
-    "type": "slot"
-   },
-   "10": {
-    "type": "plant"
+   "13": {
+    "type": "vault"
    },
    "20": {
-    "type": "slot"
+    "type": "vault"
+   },
+   "23": {
+    "type": "chandelier"
    }
   },
   "people": [
@@ -935,38 +932,49 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "ash",
+    "owner": "prudence",
+    "kind": "dir_of_person",
+    "other": "ash",
+    "dir": "west"
+   },
+   {
+    "owner": "v_marlow",
+    "kind": "not_same_room_person",
+    "other": "coco"
+   },
+   {
+    "owner": "coco",
+    "kind": "dir_of_person",
+    "other": "basil",
+    "dir": "south"
+   },
+   {
+    "owner": "basil",
+    "kind": "dir_of_person",
+    "other": "coco",
+    "dir": "east"
+   },
+   {
+    "owner": "prudence",
+    "kind": "beside_object",
+    "objType": "chandelier"
+   },
+   {
+    "owner": "prudence",
     "kind": "dir_of_person",
     "other": "coco",
     "dir": "south"
    },
    {
-    "owner": "prudence",
-    "kind": "not_beside_object",
-    "objType": "cards"
-   },
-   {
-    "owner": "coco",
+    "owner": "ash",
     "kind": "dir_of_person",
     "other": "v_marlow",
-    "dir": "east"
+    "dir": "south"
    },
    {
     "owner": "v_marlow",
-    "kind": "dir_of_object",
-    "objType": "cards",
-    "dir": "east"
-   },
-   {
-    "owner": "basil",
-    "kind": "beside_object",
-    "objType": "cards"
-   },
-   {
-    "owner": "prudence",
-    "kind": "dir_of_person",
-    "other": "basil",
-    "dir": "east"
+    "kind": "same_row_object",
+    "objType": "chandelier"
    }
   ],
   "givens": {},
@@ -1115,13 +1123,13 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "basil": 1,
-   "v_marlow": 8,
-   "prudence": 22,
-   "ash": 15,
-   "coco": 14
+   "prudence": 18,
+   "v_marlow": 5,
+   "ash": 24,
+   "coco": 11,
+   "basil": 2
   },
-  "murderer": "coco",
+  "murderer": "basil",
   "difficulty": "medium"
  },
  {
@@ -1136,76 +1144,76 @@ export const CAMPAIGN_CASES = [
    2,
    2,
    1,
-   1,
-   0,
-   0,
-   2,
-   2,
-   1,
-   1,
-   0,
-   0,
-   0,
-   2,
-   1,
-   0,
-   0,
-   0,
    4,
-   2,
-   1,
-   1,
+   4,
    3,
-   4,
-   4,
+   2,
+   2,
+   1,
    4,
    3,
    3,
    3,
+   2,
+   1,
    4,
+   0,
+   3,
+   3,
+   3,
+   1,
    4,
-   4
+   0,
+   0,
+   0,
+   0,
+   1,
+   4,
+   0,
+   0,
+   0,
+   0
   ],
   "rooms": [
    {
-    "name": "Orchestra Pit",
+    "name": "Fly Tower",
     "hue": 0
    },
    {
-    "name": "Foyer",
+    "name": "Dressing Room",
     "hue": 72
    },
    {
-    "name": "Stage",
+    "name": "Foyer",
     "hue": 144
    },
    {
-    "name": "Dressing Room",
+    "name": "Stage",
     "hue": 216
    },
    {
-    "name": "Fly Tower",
+    "name": "Orchestra Pit",
     "hue": 288
    }
   ],
   "furniture": {
-   "1": {
+   "12": {
     "type": "piano"
    },
-   "5": {
+   "14": {
+    "type": "piano"
+   },
+   "16": {
     "type": "harp"
    },
-   "12": {
+   "17": {
     "type": "harp"
    },
-   "23": {
-    "type": "candelabrum"
+   "20": {
+    "type": "curtain"
    },
-   "26": {
+   "25": {
     "type": "chandelier"
-   },
-   "27": {
-    "type": "candelabrum"
    }
   },
   "people": [
@@ -1256,57 +1264,52 @@ export const CAMPAIGN_CASES = [
   "clues": [
    {
     "owner": "v_fontaine",
-    "kind": "not_beside_object",
-    "objType": "candelabrum"
-   },
-   {
-    "owner": "vera",
-    "kind": "dir_of_object",
-    "objType": "piano",
-    "dir": "west"
-   },
-   {
-    "owner": "wren",
-    "kind": "dir_of_person",
-    "other": "v_fontaine",
-    "dir": "north"
-   },
-   {
-    "owner": "indigo",
-    "kind": "in_room",
-    "room": 4
-   },
-   {
-    "owner": "prudence",
-    "kind": "not_same_room_person",
-    "other": "indigo"
-   },
-   {
-    "owner": "coco",
-    "kind": "not_same_room_person",
-    "other": "v_fontaine"
-   },
-   {
-    "owner": "v_fontaine",
-    "kind": "dir_of_person",
-    "other": "indigo",
-    "dir": "east"
-   },
-   {
-    "owner": "coco",
-    "kind": "dir_of_person",
-    "other": "indigo",
-    "dir": "south"
-   },
-   {
-    "owner": "wren",
     "kind": "beside_object",
     "objType": "harp"
    },
    {
+    "owner": "prudence",
+    "kind": "not_in_room",
+    "room": 1
+   },
+   {
+    "owner": "indigo",
+    "kind": "dir_of_person",
+    "other": "wren",
+    "dir": "west"
+   },
+   {
+    "owner": "prudence",
+    "kind": "dir_of_object",
+    "objType": "curtain",
+    "dir": "north"
+   },
+   {
+    "owner": "indigo",
+    "kind": "edge",
+    "dir": "south"
+   },
+   {
+    "owner": "coco",
+    "kind": "dir_of_person",
+    "other": "prudence",
+    "dir": "east"
+   },
+   {
+    "owner": "wren",
+    "kind": "same_room_person",
+    "other": "indigo"
+   },
+   {
     "owner": "vera",
-    "kind": "same_row_object",
-    "objType": "piano"
+    "kind": "dir_of_person",
+    "other": "v_fontaine",
+    "dir": "east"
+   },
+   {
+    "owner": "vera",
+    "kind": "beside_object",
+    "objType": "harp"
    }
   ],
   "givens": {},
@@ -1455,14 +1458,14 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "vera": 0,
-   "wren": 13,
-   "indigo": 22,
-   "v_fontaine": 29,
-   "coco": 32,
-   "prudence": 9
+   "vera": 22,
+   "v_fontaine": 15,
+   "indigo": 30,
+   "prudence": 8,
+   "coco": 29,
+   "wren": 1
   },
-  "murderer": "indigo",
+  "murderer": "vera",
   "difficulty": "medium"
  },
  {
@@ -1470,83 +1473,83 @@ export const CAMPAIGN_CASES = [
   "title": "Last Voyage of the SS Meridian",
   "size": 6,
   "roomOf": [
-   1,
-   1,
-   1,
-   1,
    4,
    4,
-   1,
-   1,
-   1,
-   2,
    4,
    4,
-   0,
+   4,
+   4,
+   2,
+   2,
+   2,
+   2,
+   2,
+   4,
    0,
    0,
    2,
    2,
    2,
-   0,
-   0,
+   4,
    0,
    0,
    2,
-   2,
+   3,
+   3,
+   3,
    0,
-   3,
-   3,
-   3,
-   3,
-   2,
    0,
+   0,
+   1,
    3,
    3,
-   3,
-   3,
-   2
+   0,
+   0,
+   1,
+   1,
+   1,
+   1
   ],
   "rooms": [
    {
-    "name": "Engine Room",
+    "name": "Salon",
     "hue": 0
    },
    {
-    "name": "Promenade",
+    "name": "Cargo Hold",
     "hue": 72
    },
    {
-    "name": "Salon",
+    "name": "Bridge",
     "hue": 144
    },
    {
-    "name": "Bridge",
+    "name": "Engine Room",
     "hue": 216
    },
    {
-    "name": "Cargo Hold",
+    "name": "Promenade",
     "hue": 288
    }
   ],
   "furniture": {
-   "0": {
-    "type": "lantern"
-   },
-   "1": {
-    "type": "crate"
-   },
    "4": {
+    "type": "clock"
+   },
+   "5": {
+    "type": "crate"
+   },
+   "7": {
+    "type": "armchair"
+   },
+   "11": {
     "type": "lantern"
    },
-   "8": {
-    "type": "armchair"
-   },
-   "20": {
-    "type": "armchair"
-   },
-   "25": {
+   "22": {
     "type": "crate"
+   },
+   "31": {
+    "type": "lantern"
    }
   },
   "people": [
@@ -1596,60 +1599,49 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "felix",
+    "owner": "basil",
+    "kind": "same_row_object",
+    "objType": "lantern"
+   },
+   {
+    "owner": "coco",
     "kind": "dir_of_person",
-    "other": "coco",
+    "other": "basil",
     "dir": "south"
    },
    {
-    "owner": "ash",
-    "kind": "in_room",
-    "room": 1
+    "owner": "felix",
+    "kind": "dir_of_person",
+    "other": "coco",
+    "dir": "east"
    },
    {
-    "owner": "v_pemberly",
+    "owner": "ash",
+    "kind": "same_room_person",
+    "other": "basil"
+   },
+   {
+    "owner": "indigo",
     "kind": "dir_of_object",
-    "objType": "armchair",
+    "objType": "crate",
+    "dir": "south"
+   },
+   {
+    "owner": "basil",
+    "kind": "dir_of_person",
+    "other": "felix",
     "dir": "west"
    },
    {
     "owner": "v_pemberly",
     "kind": "dir_of_person",
-    "other": "basil",
-    "dir": "north"
-   },
-   {
-    "owner": "indigo",
-    "kind": "dir_of_person",
-    "other": "felix",
-    "dir": "north"
-   },
-   {
-    "owner": "basil",
-    "kind": "same_col_object",
-    "objType": "lantern"
-   },
-   {
-    "owner": "coco",
-    "kind": "not_in_room",
-    "room": 2
+    "other": "coco",
+    "dir": "west"
    },
    {
     "owner": "v_pemberly",
-    "kind": "dir_of_person",
-    "other": "felix",
-    "dir": "south"
-   },
-   {
-    "owner": "coco",
     "kind": "same_row_object",
-    "objType": "armchair"
-   },
-   {
-    "owner": "indigo",
-    "kind": "dir_of_person",
-    "other": "basil",
-    "dir": "east"
+    "objType": "lantern"
    }
   ],
   "givens": {},
@@ -1798,14 +1790,14 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "ash": 2,
-   "coco": 7,
-   "v_pemberly": 24,
-   "basil": 34,
-   "indigo": 17,
-   "felix": 21
+   "basil": 8,
+   "v_pemberly": 30,
+   "indigo": 29,
+   "felix": 3,
+   "ash": 16,
+   "coco": 19
   },
-  "murderer": "felix",
+  "murderer": "coco",
   "difficulty": "medium"
  },
  {
@@ -1813,71 +1805,71 @@ export const CAMPAIGN_CASES = [
   "title": "The Thorn Garden Party",
   "size": 7,
   "roomOf": [
+   1,
+   1,
+   1,
    3,
    3,
    3,
+   4,
+   1,
+   1,
+   1,
+   3,
+   3,
+   3,
+   4,
+   1,
+   1,
+   1,
+   3,
+   0,
+   0,
+   0,
+   1,
+   1,
+   1,
+   3,
+   0,
+   0,
+   0,
+   1,
+   3,
+   3,
+   3,
+   0,
    2,
    2,
    0,
    0,
-   3,
-   3,
+   0,
+   0,
+   0,
    2,
    2,
    2,
    2,
-   0,
-   3,
-   3,
-   4,
    2,
-   1,
    2,
-   0,
-   3,
-   4,
-   4,
-   1,
-   1,
-   1,
-   0,
-   4,
-   4,
-   4,
-   1,
-   1,
-   0,
-   0,
-   4,
-   4,
-   4,
-   1,
-   1,
-   0,
-   0,
-   4,
-   4,
-   1,
-   1,
-   1,
-   0,
-   0
+   2,
+   2,
+   2
   ],
   "rooms": [
    {
-    "name": "Apiary",
+    "name": "Gazebo",
     "hue": 0
    },
    {
-    "name": "Gazebo",
+    "name": "Rose Maze",
     "hue": 72
    },
    {
-    "name": "Rose Maze",
+    "name": "Orchard",
     "hue": 144
    },
    {
-    "name": "Orchard",
+    "name": "Apiary",
     "hue": 216
    },
    {
@@ -1886,29 +1878,29 @@ export const CAMPAIGN_CASES = [
    }
   ],
   "furniture": {
-   "6": {
-    "type": "beehive"
-   },
-   "15": {
-    "type": "fern"
-   },
-   "19": {
-    "type": "beehive"
-   },
-   "21": {
+   "5": {
     "type": "statue"
    },
-   "25": {
+   "11": {
+    "type": "fountain"
+   },
+   "14": {
     "type": "beehive"
    },
-   "26": {
-    "type": "fountain"
+   "29": {
+    "type": "statue"
    },
-   "40": {
-    "type": "fountain"
-   },
-   "41": {
+   "31": {
     "type": "fern"
+   },
+   "36": {
+    "type": "fountain"
+   },
+   "46": {
+    "type": "fern"
+   },
+   "48": {
+    "type": "statue"
    }
   },
   "people": [
@@ -1965,57 +1957,72 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "prudence",
+    "owner": "indigo",
     "kind": "dir_of_person",
-    "other": "indigo",
+    "other": "wren",
+    "dir": "north"
+   },
+   {
+    "owner": "prudence",
+    "kind": "same_col_object",
+    "objType": "statue"
+   },
+   {
+    "owner": "indigo",
+    "kind": "dir_of_person",
+    "other": "basil",
     "dir": "east"
    },
    {
-    "owner": "wren",
-    "kind": "edge",
-    "dir": "south"
-   },
-   {
     "owner": "vera",
-    "kind": "alone"
-   },
-   {
-    "owner": "wren",
-    "kind": "dir_of_object",
-    "objType": "fern",
-    "dir": "west"
-   },
-   {
-    "owner": "felix",
-    "kind": "in_room",
-    "room": 1
+    "kind": "dir_of_person",
+    "other": "felix",
+    "dir": "east"
    },
    {
     "owner": "basil",
-    "kind": "alone"
+    "kind": "same_col_object",
+    "objType": "fountain"
+   },
+   {
+    "owner": "prudence",
+    "kind": "dir_of_person",
+    "other": "indigo",
+    "dir": "north"
+   },
+   {
+    "owner": "felix",
+    "kind": "dir_of_person",
+    "other": "basil",
+    "dir": "east"
+   },
+   {
+    "owner": "felix",
+    "kind": "beside_object",
+    "objType": "fountain"
+   },
+   {
+    "owner": "wren",
+    "kind": "beside_object",
+    "objType": "statue"
    },
    {
     "owner": "basil",
     "kind": "dir_of_person",
-    "other": "felix",
+    "other": "vera",
     "dir": "south"
    },
    {
     "owner": "v_thorn",
-    "kind": "not_same_room_person",
-    "other": "prudence"
+    "kind": "dir_of_person",
+    "other": "prudence",
+    "dir": "north"
    },
    {
-    "owner": "indigo",
+    "owner": "v_thorn",
     "kind": "dir_of_person",
-    "other": "felix",
+    "other": "basil",
     "dir": "south"
-   },
-   {
-    "owner": "indigo",
-    "kind": "dir_of_person",
-    "other": "felix",
-    "dir": "east"
    }
   ],
   "givens": {},
@@ -2164,15 +2171,15 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "wren": 42,
-   "felix": 24,
-   "vera": 1,
-   "prudence": 12,
-   "basil": 34,
-   "indigo": 39,
-   "v_thorn": 16
+   "wren": 47,
+   "felix": 10,
+   "basil": 15,
+   "prudence": 34,
+   "vera": 4,
+   "indigo": 37,
+   "v_thorn": 21
   },
-  "murderer": "wren",
+  "murderer": "basil",
   "difficulty": "hard"
  },
  {
@@ -2181,62 +2188,62 @@ export const CAMPAIGN_CASES = [
   "size": 7,
   "roomOf": [
    0,
-   4,
-   2,
-   2,
-   2,
-   2,
-   2,
    0,
+   1,
    4,
    4,
-   2,
-   2,
-   2,
-   2,
-   0,
    4,
    4,
-   1,
-   1,
-   1,
-   2,
-   0,
-   4,
-   4,
-   1,
-   1,
-   1,
-   1,
-   0,
-   4,
-   4,
-   1,
-   1,
-   1,
-   1,
    0,
    0,
-   3,
-   3,
+   1,
+   4,
+   4,
+   4,
+   4,
+   0,
+   0,
+   1,
+   1,
+   1,
+   4,
+   4,
+   0,
+   1,
+   1,
+   1,
+   1,
+   1,
+   4,
+   0,
+   1,
+   1,
+   2,
    3,
    3,
    3,
    0,
    0,
-   0,
+   2,
+   2,
    3,
+   3,
+   3,
+   0,
+   0,
+   2,
+   2,
    3,
    3,
    3
   ],
   "rooms": [
    {
-    "name": "Curator Office",
+    "name": "Egyptian Wing",
     "hue": 0
    },
    {
-    "name": "Rotunda",
+    "name": "Vault",
     "hue": 72
    },
    {
@@ -2244,38 +2251,38 @@ export const CAMPAIGN_CASES = [
     "hue": 144
    },
    {
-    "name": "Egyptian Wing",
+    "name": "Curator Office",
     "hue": 216
    },
    {
-    "name": "Vault",
+    "name": "Rotunda",
     "hue": 288
    }
   ],
   "furniture": {
-   "22": {
+   "4": {
+    "type": "sarcophagus"
+   },
+   "12": {
     "type": "bookshelf"
    },
-   "24": {
-    "type": "candelabrum"
-   },
-   "25": {
-    "type": "candelabrum"
-   },
-   "30": {
-    "type": "sarcophagus"
-   },
-   "31": {
-    "type": "candelabrum"
-   },
-   "34": {
-    "type": "sarcophagus"
-   },
-   "35": {
+   "14": {
     "type": "statue"
    },
-   "36": {
-    "type": "candelabrum"
+   "17": {
+    "type": "bookshelf"
+   },
+   "28": {
+    "type": "statue"
+   },
+   "33": {
+    "type": "statue"
+   },
+   "34": {
+    "type": "statue"
+   },
+   "35": {
+    "type": "sarcophagus"
    }
   },
   "people": [
@@ -2332,74 +2339,67 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "prudence",
-    "kind": "dir_of_person",
-    "other": "coco",
-    "dir": "south"
-   },
-   {
-    "owner": "felix",
-    "kind": "dir_of_person",
-    "other": "wren",
-    "dir": "south"
-   },
-   {
-    "owner": "wren",
-    "kind": "dir_of_object",
-    "objType": "sarcophagus",
-    "dir": "west"
-   },
-   {
-    "owner": "v_locke",
-    "kind": "dir_of_object",
-    "objType": "candelabrum",
-    "dir": "east"
-   },
-   {
-    "owner": "ash",
-    "kind": "in_room",
-    "room": 4
-   },
-   {
-    "owner": "v_locke",
-    "kind": "dir_of_person",
-    "other": "vera",
-    "dir": "north"
-   },
-   {
     "owner": "coco",
-    "kind": "dir_of_person",
-    "other": "v_locke",
-    "dir": "east"
-   },
-   {
-    "owner": "v_locke",
     "kind": "dir_of_object",
     "objType": "sarcophagus",
-    "dir": "south"
-   },
-   {
-    "owner": "wren",
-    "kind": "dir_of_object",
-    "objType": "statue",
     "dir": "east"
    },
    {
     "owner": "vera",
     "kind": "dir_of_person",
-    "other": "felix",
-    "dir": "east"
+    "other": "coco",
+    "dir": "south"
+   },
+   {
+    "owner": "wren",
+    "kind": "same_row_object",
+    "objType": "bookshelf"
    },
    {
     "owner": "felix",
-    "kind": "same_room_person",
-    "other": "coco"
+    "kind": "dir_of_object",
+    "objType": "bookshelf",
+    "dir": "east"
    },
    {
-    "owner": "coco",
-    "kind": "dir_of_object",
-    "objType": "candelabrum",
+    "owner": "prudence",
+    "kind": "same_room_person",
+    "other": "wren"
+   },
+   {
+    "owner": "v_locke",
+    "kind": "beside_object",
+    "objType": "statue"
+   },
+   {
+    "owner": "ash",
+    "kind": "alone"
+   },
+   {
+    "owner": "ash",
+    "kind": "same_row_object",
+    "objType": "bookshelf"
+   },
+   {
+    "owner": "felix",
+    "kind": "dir_of_person",
+    "other": "coco",
     "dir": "north"
+   },
+   {
+    "owner": "prudence",
+    "kind": "not_same_room_person",
+    "other": "felix"
+   },
+   {
+    "owner": "wren",
+    "kind": "same_row_object",
+    "objType": "statue"
+   },
+   {
+    "owner": "wren",
+    "kind": "not_beside_object",
+    "objType": "statue"
    }
   ],
   "givens": {},
@@ -2548,15 +2548,15 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "v_locke": 40,
-   "wren": 1,
-   "ash": 23,
-   "coco": 20,
-   "vera": 46,
-   "prudence": 28,
-   "felix": 10
+   "wren": 16,
+   "felix": 6,
+   "v_locke": 32,
+   "ash": 7,
+   "coco": 40,
+   "vera": 45,
+   "prudence": 22
   },
-  "murderer": "vera",
+  "murderer": "coco",
   "difficulty": "hard"
  }
 ];
