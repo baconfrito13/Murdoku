@@ -89,8 +89,10 @@ export class BoardView {
       }
     }
 
-    // Roving tabindex arrow navigation.
-    this.host.addEventListener('keydown', (e) => {
+    // Roving tabindex arrow navigation. Property assignment (not
+    // addEventListener) so re-opening a case replaces the handler instead of
+    // stacking a second one on the shared #board element.
+    this.host.onkeydown = (e) => {
       const active = document.activeElement;
       if (!active?.classList?.contains('cell')) return;
       const cell = Number(active.dataset.cell);
@@ -109,7 +111,7 @@ export class BoardView {
         e.preventDefault();
         this.focusCell(target);
       }
-    });
+    };
   }
 
   focusCell(cell) {
