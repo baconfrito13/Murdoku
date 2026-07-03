@@ -33,15 +33,23 @@ export const OBJECT_NAMES = {
 
 // The recurring troupe of suspects (original characters).
 export const TROUPE = [
-  { id: 'vera', name: 'Vera Vantablack', role: 'the veiled widow', emoji: '🕷️', color: '#8b5cf6' },
-  { id: 'ash', name: 'Colonel Ash Redwood', role: 'the retired colonel', emoji: '🎖️', color: '#ef4444' },
-  { id: 'felix', name: 'Dr. Felix Grimm', role: 'the village physician', emoji: '🩺', color: '#10b981' },
-  { id: 'prudence', name: 'Lady Prudence Opaline', role: 'the jewel heiress', emoji: '💍', color: '#f59e0b' },
-  { id: 'basil', name: 'Chef Aurelio Basil', role: 'the temperamental chef', emoji: '🍳', color: '#f97316' },
-  { id: 'indigo', name: 'Captain Indigo Marsh', role: 'the storm-worn captain', emoji: '⚓', color: '#3b82f6' },
-  { id: 'wren', name: 'Professor Thaddeus Wren', role: 'the absent-minded professor', emoji: '🦉', color: '#14b8a6' },
-  { id: 'coco', name: 'Mademoiselle Coco Lark', role: 'the cabaret singer', emoji: '🎤', color: '#ec4899' },
+  { id: 'vera', name: 'Vera Vantablack', role: 'the veiled widow', emoji: '🕷️', color: '#8b5cf6', g: 'f', mono: 'VV' },
+  { id: 'ash', name: 'Colonel Ash Redwood', role: 'the retired colonel', emoji: '🎖️', color: '#ef4444', g: 'm', mono: 'AR' },
+  { id: 'felix', name: 'Dr. Felix Grimm', role: 'the village physician', emoji: '🩺', color: '#10b981', g: 'm', mono: 'FG' },
+  { id: 'prudence', name: 'Lady Prudence Opaline', role: 'the jewel heiress', emoji: '💍', color: '#f59e0b', g: 'f', mono: 'PO' },
+  { id: 'basil', name: 'Chef Aurelio Basil', role: 'the temperamental chef', emoji: '🍳', color: '#f97316', g: 'm', mono: 'AB' },
+  { id: 'indigo', name: 'Captain Indigo Marsh', role: 'the storm-worn captain', emoji: '⚓', color: '#3b82f6', g: 'm', mono: 'IM' },
+  { id: 'wren', name: 'Professor Thaddeus Wren', role: 'the absent-minded professor', emoji: '🦉', color: '#14b8a6', g: 'm', mono: 'TW' },
+  { id: 'coco', name: 'Mademoiselle Coco Lark', role: 'the cabaret singer', emoji: '🎤', color: '#ec4899', g: 'f', mono: 'CL' },
 ];
+
+// Monogram for any person (fallback when `mono` is absent, e.g. victims).
+export function monogramOf(person) {
+  if (person.mono) return person.mono;
+  const words = person.name.replace(/^(Dr|Sir|Lady|Chef|Captain|Professor|Colonel|Madame|Maestro|Miss|Mademoiselle|Ambassador|Curator|Mayor|Nurse|Grand Duchess)\.?\s+/i, '')
+    .split(/\s+/).filter(Boolean);
+  return words.slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+}
 
 export const pickTroupe = (ids) => ids.map((id) => ({ ...TROUPE.find((t) => t.id === id) }));
 
@@ -93,7 +101,7 @@ export const CAMPAIGN_BRIEFS = [
   {
     id: 'c01', size: 4, theme: 'manor', difficulty: 'easy', seed: 'murdoku-c01',
     suspects: ['vera', 'ash', 'felix'],
-    victim: { id: 'v_gilt', name: 'Barnaby Gilt', role: 'the millionaire host', emoji: '🎩', isVictim: true, color: '#94a3b8' },
+    victim: { id: 'v_gilt', g: 'm', name: 'Barnaby Gilt', role: 'the millionaire host', emoji: '🎩', isVictim: true, color: '#94a3b8' },
     story: {
       title: 'The Gilt Manor Affair',
       intro: 'Millionaire Barnaby Gilt invited three guests for brandy and bragging. By midnight, only the bragging had stopped — permanently. Reconstruct where everyone stood when the lights went out.',
@@ -103,7 +111,7 @@ export const CAMPAIGN_BRIEFS = [
   {
     id: 'c02', size: 4, theme: 'bakery', difficulty: 'easy', seed: 'murdoku-c02',
     suspects: ['basil', 'prudence', 'coco'],
-    victim: { id: 'v_crumb', name: 'Otto Crumb', role: 'the master baker', emoji: '🥖', isVictim: true, color: '#94a3b8' },
+    victim: { id: 'v_crumb', g: 'm', name: 'Otto Crumb', role: 'the master baker', emoji: '🥖', isVictim: true, color: '#94a3b8' },
     story: {
       title: 'Death Rises at Dawn',
       intro: 'Master baker Otto Crumb was found cold beside his proofing dough — which, unlike him, had risen. Three early visitors were in the bakery. The flour on the floor remembers every step.',
@@ -113,7 +121,7 @@ export const CAMPAIGN_BRIEFS = [
   {
     id: 'c03', size: 5, theme: 'observatory', difficulty: 'easy', seed: 'murdoku-c03',
     suspects: ['wren', 'vera', 'indigo', 'felix'],
-    victim: { id: 'v_starr', name: 'Dr. Celeste Starr', role: 'the royal astronomer', emoji: '🌠', isVictim: true, color: '#94a3b8' },
+    victim: { id: 'v_starr', g: 'f', name: 'Dr. Celeste Starr', role: 'the royal astronomer', emoji: '🌠', isVictim: true, color: '#94a3b8' },
     story: {
       title: 'The Comet That Never Came',
       intro: 'Dr. Celeste Starr promised the town a comet at 11:07. At 11:08 she was dead under her own dome. Four colleagues were inside when the shutters jammed.',
@@ -123,7 +131,7 @@ export const CAMPAIGN_BRIEFS = [
   {
     id: 'c04', size: 5, theme: 'casino', difficulty: 'medium', seed: 'murdoku-c04',
     suspects: ['prudence', 'ash', 'coco', 'basil'],
-    victim: { id: 'v_marlow', name: 'Sonny Marlow', role: 'the pit boss', emoji: '🎲', isVictim: true, color: '#94a3b8' },
+    victim: { id: 'v_marlow', g: 'm', name: 'Sonny Marlow', role: 'the pit boss', emoji: '🎲', isVictim: true, color: '#94a3b8' },
     story: {
       title: 'Snake Eyes at the Silver Slipper',
       intro: 'Pit boss Sonny Marlow always said the house never loses. Tonight the house lost him. Four patrons were still on the floor when the chips stopped clicking.',
@@ -133,7 +141,7 @@ export const CAMPAIGN_BRIEFS = [
   {
     id: 'c05', size: 6, theme: 'opera', difficulty: 'medium', seed: 'murdoku-c05',
     suspects: ['coco', 'vera', 'wren', 'prudence', 'indigo'],
-    victim: { id: 'v_fontaine', name: 'Maestro Rex Fontaine', role: 'the tyrant conductor', emoji: '🎼', isVictim: true, color: '#94a3b8' },
+    victim: { id: 'v_fontaine', g: 'm', name: 'Maestro Rex Fontaine', role: 'the tyrant conductor', emoji: '🎼', isVictim: true, color: '#94a3b8' },
     story: {
       title: 'Aria for a Dead Maestro',
       intro: 'Maestro Rex Fontaine cut the soprano’s solo one time too many. During the blackout of Act II, someone cut his. Five members of the company never left the house.',
@@ -143,7 +151,7 @@ export const CAMPAIGN_BRIEFS = [
   {
     id: 'c06', size: 6, theme: 'steamer', difficulty: 'medium', seed: 'murdoku-c06',
     suspects: ['indigo', 'felix', 'ash', 'coco', 'basil'],
-    victim: { id: 'v_pemberly', name: 'Ambassador Iris Pemberly', role: 'the retiring diplomat', emoji: '🕊️', isVictim: true, color: '#94a3b8' },
+    victim: { id: 'v_pemberly', g: 'f', name: 'Ambassador Iris Pemberly', role: 'the retiring diplomat', emoji: '🕊️', isVictim: true, color: '#94a3b8' },
     story: {
       title: 'Last Voyage of the SS Meridian',
       intro: 'Ambassador Iris Pemberly boarded the SS Meridian with a briefcase she never let go. Somewhere between the fog and the foghorn, she let go. Five passengers know exactly where they stood.',
@@ -153,7 +161,7 @@ export const CAMPAIGN_BRIEFS = [
   {
     id: 'c07', size: 7, theme: 'garden', difficulty: 'hard', seed: 'murdoku-c07',
     suspects: ['vera', 'prudence', 'wren', 'basil', 'felix', 'indigo'],
-    victim: { id: 'v_thorn', name: 'Sir Digby Thorn', role: 'the prize horticulturist', emoji: '🌹', isVictim: true, color: '#94a3b8' },
+    victim: { id: 'v_thorn', g: 'm', name: 'Sir Digby Thorn', role: 'the prize horticulturist', emoji: '🌹', isVictim: true, color: '#94a3b8' },
     story: {
       title: 'The Thorn Garden Party',
       intro: 'Sir Digby Thorn unveiled his black rose to six guests at the summer party. By teatime the rose was gone and so was Sir Digby. The hedges saw everything. So did you.',
@@ -163,7 +171,7 @@ export const CAMPAIGN_BRIEFS = [
   {
     id: 'c08', size: 7, theme: 'museum', difficulty: 'hard', seed: 'murdoku-c08-v0-v2',
     suspects: ['wren', 'vera', 'ash', 'prudence', 'coco', 'felix'],
-    victim: { id: 'v_locke', name: 'Curator Maximilian Locke', role: 'the museum curator', emoji: '🗝️', isVictim: true, color: '#94a3b8' },
+    victim: { id: 'v_locke', g: 'm', name: 'Curator Maximilian Locke', role: 'the museum curator', emoji: '🗝️', isVictim: true, color: '#94a3b8' },
     story: {
       title: 'Midnight at the Meridian Museum',
       intro: 'Curator Maximilian Locke stayed late to authenticate a golden scarab. The scarab was real; the alibis were not. Six after-hours guests were locked in with him.',

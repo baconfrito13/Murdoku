@@ -17,12 +17,14 @@ No build step, no dependencies — plain HTML/CSS/ES modules.
 
 - The board is an N×N **crime-scene map** divided into colored rooms; furniture
   blocks squares.
-- Place all suspects **and the victim** so every **row and column contains
-  exactly one person**.
+- Place all **suspects** so every **row and column contains exactly one
+  person**. With every suspect down, exactly one row and one column remain
+  free — **their crossing reveals the victim** (the "final V").
 - Every clue on every card must be **true** ("beside" = orthogonally adjacent
   and in the same room; "south of" = strictly lower on the map).
 - The murderer is whoever ends up **alone with the victim in the same room**.
   Make your accusation!
+- Fully playable in **English and Portuguese** (PT/EN toggle in the top bar).
 
 ## Guarantees
 

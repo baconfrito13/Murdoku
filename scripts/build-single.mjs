@@ -14,6 +14,8 @@ const read = (p) => readFileSync(join(root, p), 'utf8');
 const MODULES = [
   'js/engine/rng.js',
   'js/engine/model.js',
+  'js/i18n.js',
+  'js/icons.js',
   'js/engine/clues.js',
   'js/engine/solver.js',
   'js/engine/generator.js',

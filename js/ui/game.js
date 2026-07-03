@@ -1,13 +1,20 @@
 // Game screen controller: wires board, dock, toolbar, timer, dialogs.
+//
+// The player places SUSPECTS only. When every suspect is on the board with no
+// row/column conflict, exactly one row and one column remain free — their
+// crossing is revealed as the victim's square (the book's "final V").
 
 import { qs, el, toast, announce, openDialog, confettiBurst } from './dom.js';
 import { GameState, progress, settings, transientCases } from './state.js';
 import { BoardView } from './board.js';
-import { DockView } from './cards.js';
-import { rowOf, colOf, rowColConflicts, victimOf, impliedMurderer } from '../engine/model.js';
+import { DockView, avatarNode } from './cards.js';
+import {
+  rowOf, colOf, rowColConflicts, victimOf, impliedMurderer, derivedVictimCell,
+} from '../engine/model.js';
 import { evalClue } from '../engine/clues.js';
 import { nextHint } from '../engine/solver.js';
 import { OBJECT_NAMES } from '../roster.js';
+import { t, caseTitle, caseIntro, caseReveal, roomLabel, getLang } from '../i18n.js';
 
 export class GameScreen {
   constructor({ onExit }) {
@@ -15,8 +22,8 @@ export class GameScreen {
     this.armed = null;
     this.timerId = null;
     this.pendingHint = null;
+    this.lastVictimCell = null;
 
-    // toolbar
     qs('#btn-back').addEventListener('click', () => this.exit());
     qs('#btn-story').addEventListener('click', () => this.showStory());
     qs('#tool-xmark').addEventListener('click', () => this.toggleXMode());
@@ -42,7 +49,6 @@ export class GameScreen {
     document.addEventListener('keydown', (e) => this.onKey(e));
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) { this.pauseTimer(); return; }
-      // only resume when the game screen is actually up and the brief closed
       const gameVisible = !qs('#screen-game').hidden;
       const briefOpen = qs('#dlg-story').open;
       if (gameVisible && !briefOpen && this.state && !this.state.finished) this.startTimer();
@@ -50,26 +56,32 @@ export class GameScreen {
     this.xMode = false;
   }
 
+  suspects() {
+    return this.case.people.filter((p) => !p.isVictim);
+  }
+
   open(cse, { resume = true } = {}) {
     this.case = cse;
     this.state = new GameState(cse);
     if (resume) {
       const restored = this.state.restore();
-      if (restored) toast('Investigation resumed where you left off.');
+      if (restored) toast(t('resumed'));
     }
+    // the victim is never a player placement in this model
+    this.state.placement.set(victimOf(cse).id, null);
     this.armed = null;
     this.xMode = false;
+    this.lastVictimCell = null;
     qs('#tool-xmark').setAttribute('aria-pressed', 'false');
 
-    qs('#game-title').textContent = cse.title;
+    qs('#game-title').textContent = caseTitle(cse);
     const diff = qs('#game-difficulty');
-    diff.textContent = `${cse.difficulty ?? 'case'} · ${cse.size}×${cse.size}`;
+    diff.textContent = `${t('difficulty')[cse.difficulty] ?? cse.difficulty} · ${cse.size}×${cse.size}`;
     diff.className = `chip ${cse.difficulty ?? ''}`;
 
     this.board = new BoardView(qs('#board'), cse, {
       onCellActivate: (cell, mods) => this.onCell(cell, mods),
     });
-    this.board.renderLegend(qs('#board-legend'));
     this.dock = new DockView(qs('#dock'), cse, {
       onArm: (pid) => this.arm(pid),
     });
@@ -78,7 +90,8 @@ export class GameScreen {
 
     this.refresh();
     this.startTimer();
-    if (!this.state.undoStack.length && ![...this.state.placement.values()].some((c, i) => c != null && !Object.values(cse.givens ?? {}).includes(c))) {
+    if (!this.state.undoStack.length
+      && ![...this.state.placement.values()].some((c) => c != null)) {
       this.showStory();
     }
   }
@@ -89,22 +102,32 @@ export class GameScreen {
     this.onExit();
   }
 
+  // ---------- victim derivation ----------
+  victimCell() {
+    return derivedVictimCell(this.case, this.state.placement);
+  }
+
+  // placement map including the derived victim square, for clue evaluation
+  fullPlacement() {
+    const merged = new Map(this.state.placement);
+    merged.set(victimOf(this.case).id, this.victimCell());
+    return merged;
+  }
+
   // ---------- interactions ----------
   arm(pid) {
     if (this.state.finished) return;
-    if (this.state.isGiven(pid)) {
-      toast('That position is part of the case file — it cannot move.');
+    const person = this.case.people.find((x) => x.id === pid);
+    if (person.isVictim) {
+      toast(t('victimLocked'));
       return;
     }
     this.armed = this.armed === pid ? null : pid;
     if (this.armed && this.xMode) this.toggleXMode(false);
-    const p = this.case.people.find((x) => x.id === pid);
-    announce(this.armed ? `${p.name} selected. Choose a square.` : 'Selection cleared.');
+    announce(this.armed ? t('selectedChoose', person.name) : t('selectionCleared'));
     this.refresh();
   }
 
-  // Cancel the current selection; if the selected person was just picked up
-  // off the board, put them back where they were.
   cancelSelection() {
     if (this.armed && this.state.placement.get(this.armed) == null) {
       const last = this.state.undoStack[this.state.undoStack.length - 1];
@@ -113,7 +136,7 @@ export class GameScreen {
         this.state.undo();
         this.state.redoStack.length = 0;
         this.state.save();
-        announce('Selection cancelled — returned to their square.');
+        announce(t('cancelledBack'));
       }
     }
     this.armed = null;
@@ -123,53 +146,60 @@ export class GameScreen {
   onCell(cell, { alt = false } = {}) {
     if (this.state.finished) return;
     if (this.case.furniture[cell]) {
-      if (!alt) toast('Nobody can stand there — the spot is blocked.');
+      if (!alt) toast(t('blockedSpot'));
       return;
     }
-    const occupant = this.state.personAt(cell);
+    if (this.victimCell() === cell && !alt) {
+      toast(t('victimLocked'));
+      return;
+    }
+    const occupant = this.personAtCell(cell);
 
     if (alt || this.xMode) {
-      if (occupant) { toast('Remove the person first to cross that square out.'); return; }
+      if (occupant || this.victimCell() === cell) { toast(t('removeFirst')); return; }
       const on = !this.state.marks.has(cell);
       this.state.apply({ type: 'mark', cell, on });
-      announce(on ? 'Square crossed out.' : 'Cross removed.');
+      announce(on ? t('crossedOut') : t('crossRemoved'));
       this.afterMove();
       return;
     }
 
     if (this.armed) {
       if (occupant && occupant !== this.armed) {
-        toast('That square is taken.');
+        toast(t('squareTaken'));
         return;
       }
       const target = occupant === this.armed ? null : cell; // tap own pawn = pick up
       this.state.apply({ type: 'place', pid: this.armed, cell: target });
       const p = this.case.people.find((x) => x.id === this.armed);
       if (target != null) {
-        announce(`${p.name} placed at row ${rowOf(cell, this.case.size) + 1}, column ${colOf(cell, this.case.size) + 1}.`);
+        announce(t('placedAt', p.name, rowOf(cell, this.case.size) + 1, colOf(cell, this.case.size) + 1));
         this.armed = null;
       } else {
-        announce(`${p.name} picked up.`);
+        announce(t('pickedUp', p.name));
       }
       this.afterMove();
       return;
     }
 
     if (occupant) {
-      if (this.state.isGiven(occupant)) {
-        toast('That position is part of the case file — it cannot move.');
-        return;
-      }
-      // pick up: arm and remove
       this.state.apply({ type: 'place', pid: occupant, cell: null });
       this.armed = occupant;
       const p = this.case.people.find((x) => x.id === occupant);
-      announce(`${p.name} picked up. Choose a new square.`);
+      announce(t('pickedUp', p.name));
       this.afterMove();
       return;
     }
 
-    toast('Select a suspect card first, or use ✕ to cross squares out.');
+    toast(t('selectFirst'));
+  }
+
+  personAtCell(cell) {
+    const victim = victimOf(this.case);
+    for (const [pid, c] of this.state.placement) {
+      if (pid !== victim.id && c === cell) return pid;
+    }
+    return null;
   }
 
   toggleXMode(force) {
@@ -180,26 +210,28 @@ export class GameScreen {
   }
 
   undo() {
-    if (this.state.undo()) { announce('Undone.'); this.afterMove(); }
+    if (this.state.undo()) { announce(t('undone')); this.afterMove(); }
   }
 
   redo() {
-    if (this.state.redo()) { announce('Redone.'); this.afterMove(); }
+    if (this.state.redo()) { announce(t('redone')); this.afterMove(); }
   }
 
   restart() {
-    qs('#confirm-title').textContent = 'Start over?';
-    qs('#confirm-text').textContent = 'This clears every placement and ✕ on the board. The case stays the same.';
+    qs('#confirm-title').textContent = t('startOver');
+    qs('#confirm-text').textContent = t('startOverText');
     const yes = qs('#confirm-yes');
-    yes.textContent = 'Clear the board';
+    yes.textContent = t('clearBoard');
     yes.onclick = () => {
       qs('#dlg-confirm').close();
       this.state.clearSave();
       this.state = new GameState(this.case);
+      this.state.placement.set(victimOf(this.case).id, null);
       this.armed = null;
       this.wasReady = false;
+      this.lastVictimCell = null;
       this.refresh();
-      toast('A fresh start. The truth is still in there.');
+      toast(t('freshStart'));
     };
     openDialog(qs('#dlg-confirm'));
   }
@@ -214,13 +246,16 @@ export class GameScreen {
     this.state.autoMarks.clear();
     if (!settings.get().autox) return;
     const n = this.case.size;
-    for (const [, cell] of this.state.placement) {
-      if (cell == null) continue;
+    const vCell = this.victimCell();
+    const used = [...this.state.placement.values()].filter((c) => c != null);
+    if (vCell != null) used.push(vCell);
+    for (const cell of used) {
       for (let i = 0; i < n; i++) {
         const rc = rowOf(cell, n) * n + i;
         const cc = i * n + colOf(cell, n);
         for (const target of [rc, cc]) {
-          if (target !== cell && !this.case.furniture[target] && this.state.personAt(target) == null) {
+          if (target !== cell && !this.case.furniture[target]
+            && this.personAtCell(target) == null && target !== vCell) {
             this.state.autoMarks.add(target);
           }
         }
@@ -231,48 +266,71 @@ export class GameScreen {
   conflictCells() {
     const out = new Set();
     for (const [pa, pb] of rowColConflicts(this.case, this.state.placement)) {
-      out.add(this.state.placement.get(pa));
-      out.add(this.state.placement.get(pb));
+      const ca = this.state.placement.get(pa);
+      const cb = this.state.placement.get(pb);
+      if (ca != null) out.add(ca);
+      if (cb != null) out.add(cb);
     }
     return out;
   }
 
   violatedClues() {
-    return this.case.clues.filter((c) => evalClue(this.case, c, this.state.placement) === false);
+    const full = this.fullPlacement();
+    return this.case.clues.filter((c) => evalClue(this.case, c, full) === false);
+  }
+
+  suspectsPlaced() {
+    return this.suspects().filter((p) => this.state.placement.get(p.id) != null).length;
   }
 
   refresh() {
     const live = settings.get().live;
+    const victim = victimOf(this.case);
+    const vCell = this.victimCell();
     this.computeAutoMarks();
     const conflicts = live ? this.conflictCells() : new Set();
-    this.board.update(this.state, { conflicts, armed: this.armed });
+    this.board.update(this.state, { conflicts, armed: this.armed, victimCell: vCell });
     this.board.host.classList.toggle('arming', this.armed != null);
-    this.dock.update(this.state, { armed: this.armed, liveCheck: live });
+    this.dock.update(this.state, {
+      armed: this.armed, liveCheck: live, placementWithVictim: this.fullPlacement(),
+    });
     this.updateChipStrip();
 
-    // dock header doubles as a "holding …" indicator
+    // victim reveal moment
+    if (vCell !== this.lastVictimCell) {
+      if (vCell != null && !this.state.finished) {
+        const room = roomLabel(this.case.rooms[this.case.roomOf[vCell]].name);
+        const loc = t('victimRevealed', victim.name, room);
+        toast(loc, 'good');
+        announce(t('victimAnnounce', victim.name, room));
+        this.board.flashCell(vCell);
+      } else if (vCell == null && this.lastVictimCell != null
+        && this.suspectsPlaced() === this.suspects().length
+        && this.conflictCells().size === 0) {
+        toast(t('victimNoRoom'), 'error');
+      }
+      this.lastVictimCell = vCell;
+    }
+
     const hint = qs('.side-hint');
     if (this.armed) {
       const p = this.case.people.find((x) => x.id === this.armed);
-      hint.textContent = `placing ${p.name.split(' ')[0]} — tap a square (Esc cancels)`;
+      hint.textContent = t('placing', p.name.split(' ')[0]);
     } else {
-      hint.textContent = 'select, then tap the map';
+      hint.textContent = t('selectThenTap');
     }
 
     qs('#tool-undo').disabled = this.state.undoStack.length === 0;
     qs('#tool-redo').disabled = this.state.redoStack.length === 0;
 
-    const ready = this.state.allPlaced()
+    const ready = vCell != null
       && this.conflictCells().size === 0
       && this.violatedClues().length === 0;
     const accuse = qs('#tool-accuse');
-    // aria-disabled (not disabled) so touch users still get feedback on tap
     accuse.setAttribute('aria-disabled', String(!ready));
-    accuse.title = ready
-      ? 'Name the murderer'
-      : 'Place everyone with no conflicts and no broken clues first';
+    accuse.title = ready ? t('accuseReadyTitle') : t('accuseGatedTitle');
     if (ready && !this.wasReady && !this.state.finished) {
-      toast('Everything checks out. Time to point a finger…', 'good');
+      toast(t('allChecksOut'), 'good');
     }
     this.wasReady = ready;
   }
@@ -282,14 +340,14 @@ export class GameScreen {
     const strip = qs('#chip-strip');
     strip.innerHTML = '';
     this.chips = new Map();
-    for (const p of this.case.people) {
+    for (const p of this.suspects()) {
       const chip = el('button', {
         class: 'strip-chip', 'aria-pressed': 'false',
-        'aria-label': `Select ${p.name}`,
+        'aria-label': p.name,
         onclick: () => this.arm(p.id),
       },
-        el('span', { class: 'avatar', style: { '--pawn-color': p.color ?? '#8a8a8a' }, 'aria-hidden': 'true' }, p.emoji),
-        el('span', { class: 'strip-name' }, p.name.split(' ')[0] + (p.isVictim ? ' †' : '')));
+        avatarNode(p),
+        el('span', { class: 'strip-name' }, p.name.split(' ')[0]));
       this.chips.set(p.id, chip);
       strip.append(chip);
     }
@@ -307,21 +365,22 @@ export class GameScreen {
   check(verbose) {
     const conflicts = this.conflictCells();
     const violated = this.violatedClues();
-    const placed = [...this.state.placement.values()].filter((c) => c != null).length;
+    const placed = this.suspectsPlaced();
+    const total = this.suspects().length;
 
     if (conflicts.size === 0 && violated.length === 0) {
-      if (this.state.allPlaced()) {
-        toast('Everything checks out. Time to point a finger…', 'good');
+      if (this.victimCell() != null) {
+        toast(t('allChecksOut'), 'good');
       } else if (verbose) {
-        toast(`No contradictions so far — ${placed}/${this.case.people.length} placed.`, 'good');
+        toast(t('noContradictions', placed, total), 'good');
       }
       return;
     }
     if (verbose) {
-      const bits = [];
-      if (conflicts.size) bits.push('two people share a row or column');
-      if (violated.length) bits.push(`${violated.length} clue${violated.length > 1 ? 's are' : ' is'} broken`);
-      toast(`Not quite: ${bits.join(' and ')}.`, 'error');
+      const parts = [];
+      if (conflicts.size) parts.push(t('rowColConflict'));
+      if (violated.length) parts.push(t('cluesBroken', violated.length));
+      toast(`${t('notQuite')} ${parts.join(' · ')}.`, 'error');
       this.state.mistakes++;
       this.state.save();
     }
@@ -329,13 +388,17 @@ export class GameScreen {
   }
 
   hint() {
-    const hint = nextHint(this.case, this.state.placement, OBJECT_NAMES);
-    if (!hint) { toast('The board is full — press Check or make your accusation.'); return; }
+    const hint = nextHint(this.case, this.state.placement, OBJECT_NAMES, {
+      mistake: (name) => t('hintMistake', name),
+      focus: (name, clues) => t('hintFocus', name, clues),
+      and: getLang() === 'pt' ? ' e ' : ' and ',
+    });
+    if (!hint) { toast(t('boardFull')); return; }
     this.state.hintsUsed++;
     this.state.save();
     this.pendingHint = hint;
     qs('#hint-text').textContent = hint.reason;
-    qs('#hint-apply').textContent = hint.type === 'mistake' ? 'Show me the misplaced person' : 'Show me on the map';
+    qs('#hint-apply').textContent = hint.type === 'mistake' ? t('showMisplaced') : t('showOnMap');
     openDialog(qs('#dlg-hint'));
   }
 
@@ -348,8 +411,6 @@ export class GameScreen {
     } else {
       this.state.apply({ type: 'place', pid: hint.personId, cell: hint.cell });
       this.board.flashCell(hint.cell);
-      const p = this.case.people.find((x) => x.id === hint.personId);
-      announce(`${p.name} placed by deduction.`);
       this.afterMove();
     }
     this.pendingHint = null;
@@ -358,28 +419,28 @@ export class GameScreen {
   // ---------- story / accusation / verdict ----------
   showStory() {
     this.pauseTimer();
-    qs('#dlg-story-title').textContent = this.case.title;
-    qs('#dlg-story-text').textContent = this.case.story?.intro ?? '';
+    qs('#dlg-story-title').textContent = caseTitle(this.case);
+    qs('#dlg-story-text').textContent = caseIntro(this.case);
     openDialog(qs('#dlg-story'));
   }
 
   openAccusation() {
     if (qs('#tool-accuse').getAttribute('aria-disabled') === 'true') {
-      const placed = [...this.state.placement.values()].filter((c) => c != null).length;
-      toast(placed < this.case.people.length
-        ? `Place everyone first — ${placed}/${this.case.people.length} on the map.`
-        : 'Fix the conflicts and broken clues first — the jury wants a flawless map.', 'error');
+      const placed = this.suspectsPlaced();
+      const total = this.suspects().length;
+      toast(placed < total
+        ? t('placeEveryoneFirst', placed, total)
+        : t('fixFirst'), 'error');
       return;
     }
     const lineup = qs('#accuse-lineup');
     lineup.innerHTML = '';
-    for (const p of this.case.people) {
-      if (p.isVictim) continue;
+    for (const p of this.suspects()) {
       lineup.append(el('button', {
         class: 'lineup-btn',
         onclick: () => this.accuse(p.id),
       },
-        el('span', { class: 'avatar', style: { '--pawn-color': p.color }, 'aria-hidden': 'true' }, p.emoji),
+        avatarNode(p),
         el('span', { class: 'lineup-name' }, p.name)));
     }
     openDialog(qs('#dlg-accuse'));
@@ -387,24 +448,22 @@ export class GameScreen {
 
   accuse(pid) {
     qs('#dlg-accuse').close();
-    const correct = pid === this.case.murderer
-      && impliedMurderer(this.case, this.state.placement) === pid;
+    const full = this.fullPlacement();
+    const correct = pid === this.case.murderer && impliedMurderer(this.case, full) === pid;
     const accusedP = this.case.people.find((p) => p.id === pid);
 
     if (!correct) {
       this.state.mistakes++;
       this.state.save();
       qs('#verdict-emoji').textContent = '🚔';
-      qs('#verdict-title').textContent = 'The jury is not convinced';
-      qs('#verdict-text').textContent =
-        `${accusedP.name} produces an alibi and walks free. Someone in this room is smiling. ` +
-        'Re-examine who was truly alone with the victim.';
+      qs('#verdict-title').textContent = t('juryNotConvinced');
+      qs('#verdict-text').textContent = t('wrongAccusation', accusedP.name);
       qs('#verdict-stats').innerHTML = '';
       const secondary = qs('#verdict-secondary');
       const primary = qs('#verdict-primary');
-      secondary.textContent = 'Back to cases';
+      secondary.textContent = t('backToCases');
       secondary.onclick = () => { qs('#dlg-verdict').close(); this.exit(); };
-      primary.textContent = 'Keep investigating';
+      primary.textContent = t('keepInvestigating');
       primary.onclick = () => qs('#dlg-verdict').close();
       openDialog(qs('#dlg-verdict'));
       return;
@@ -417,29 +476,28 @@ export class GameScreen {
     this.state.clearSave();
     if (transientCases.load()?.id === this.case.id) transientCases.clear();
 
-    const story = this.case.story?.reveal ?? '{murderer} did it.';
-    const text = story
+    const text = caseReveal(this.case)
       .replaceAll('{murderer}', accusedP.name)
       .replaceAll('{murdererShort}', accusedP.name.split(' ')[0]);
     qs('#verdict-emoji').textContent = '⚖️';
-    qs('#verdict-title').textContent = 'Case closed!';
+    qs('#verdict-title').textContent = t('caseClosed');
     qs('#verdict-text').textContent = text;
 
     const stats = qs('#verdict-stats');
     stats.innerHTML = '';
     stats.append(
       el('span', { class: 'chip mono' }, `⏱ ${formatTime(this.state.elapsed)}`),
-      el('span', { class: 'chip' }, `💡 ${this.state.hintsUsed} hint${this.state.hintsUsed === 1 ? '' : 's'}`),
-      el('span', { class: 'chip' }, `✗ ${this.state.mistakes} mistake${this.state.mistakes === 1 ? '' : 's'}`),
+      el('span', { class: 'chip' }, t('statHints', this.state.hintsUsed)),
+      el('span', { class: 'chip' }, t('statMistakes', this.state.mistakes)),
     );
     const secondary = qs('#verdict-secondary');
     const primary = qs('#verdict-primary');
-    secondary.textContent = 'Replay';
+    secondary.textContent = t('replay');
     secondary.onclick = () => {
       qs('#dlg-verdict').close();
       this.open(this.case, { resume: false });
     };
-    primary.textContent = 'More cases';
+    primary.textContent = t('moreCases');
     primary.onclick = () => { qs('#dlg-verdict').close(); this.exit(); };
     confettiBurst();
     openDialog(qs('#dlg-verdict'));
@@ -477,8 +535,9 @@ export class GameScreen {
     if (e.key.toLowerCase() === 'h') { this.hint(); return; }
     if (e.key.toLowerCase() === 'm') { this.toggleXMode(); return; }
     const num = Number(e.key);
-    if (num >= 1 && num <= this.case.people.length) {
-      this.arm(this.case.people[num - 1].id);
+    const suspects = this.suspects();
+    if (num >= 1 && num <= suspects.length) {
+      this.arm(suspects[num - 1].id);
     }
   }
 }

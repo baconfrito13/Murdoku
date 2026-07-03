@@ -19,6 +19,7 @@
   </button>
   <div class="topbar-actions">
     <button id="btn-help" class="ghost-btn" aria-haspopup="dialog">How to play</button>
+    <button id="btn-lang" class="icon-btn lang-btn" aria-label="Switch language">PT</button>
     <button id="btn-theme" class="icon-btn" aria-label="Toggle dark or light theme">◐</button>
   </div>
 </header>
@@ -27,25 +28,22 @@
   <!-- Home -->
   <section id="screen-home" class="screen" hidden>
     <div class="hero">
-      <h1 class="hero-title">Every square tells a story.<br>One of them is a lie.</h1>
-      <p class="hero-sub">
-        Place every suspect on the crime-scene map — one per row, one per column —
-        so that every clue holds. Then find who was <em>alone with the victim</em>.
-      </p>
+      <h1 class="hero-title"></h1>
+      <p class="hero-sub"></p>
       <div class="hero-cta">
-        <button id="btn-daily" class="primary-btn">🗓️ Today's Case</button>
-        <button id="btn-random" class="secondary-btn">🎲 Random Case</button>
-        <button id="btn-tutorial" class="secondary-btn">🎓 Learn to Play</button>
+        <button id="btn-daily" class="primary-btn"></button>
+        <button id="btn-random" class="secondary-btn"></button>
+        <button id="btn-tutorial" class="secondary-btn"></button>
       </div>
     </div>
-    <h2 class="section-title">Case Files</h2>
+    <h2 id="home-section-title" class="section-title"></h2>
     <div id="campaign-list" class="case-grid" role="list"></div>
   </section>
 
   <!-- Game -->
   <section id="screen-game" class="screen" hidden>
     <div class="game-head">
-      <button id="btn-back" class="ghost-btn">← Cases</button>
+      <button id="btn-back" class="ghost-btn"></button>
       <div class="game-title-wrap">
         <h1 id="game-title" class="game-title"></h1>
         <div class="game-meta">
@@ -53,38 +51,37 @@
           <span id="game-timer" class="chip mono" aria-label="Elapsed time">0:00</span>
         </div>
       </div>
-      <button id="btn-story" class="ghost-btn" aria-haspopup="dialog">📜 Brief</button>
+      <button id="btn-story" class="ghost-btn" aria-haspopup="dialog"></button>
     </div>
 
     <div class="game-layout">
       <div class="board-wrap">
         <div id="chip-strip" class="chip-strip" aria-label="Quick suspect picker"></div>
         <div id="board" class="board" role="group" aria-label="Crime scene map"></div>
-        <div class="board-legend" id="board-legend" aria-hidden="true"></div>
       </div>
 
       <aside class="side-panel">
         <div class="dock-head">
-          <h2 class="side-title">Suspects &amp; Victim</h2>
-          <span class="side-hint">select, then tap the map</span>
+          <h2 id="dock-title" class="side-title"></h2>
+          <span class="side-hint"></span>
         </div>
-        <div id="dock" class="dock" role="listbox" aria-label="People to place"></div>
+        <div id="dock" class="dock"></div>
       </aside>
     </div>
 
     <div class="toolbar" role="toolbar" aria-label="Game tools">
-      <button id="tool-xmark" class="tool-btn" aria-pressed="false" title="Mark impossible squares (X)">✕<span class="tool-label">Mark</span></button>
-      <button id="tool-undo" class="tool-btn" title="Undo (Ctrl+Z)">↩<span class="tool-label">Undo</span></button>
-      <button id="tool-redo" class="tool-btn" title="Redo (Ctrl+Y)">↪<span class="tool-label">Redo</span></button>
-      <button id="tool-check" class="tool-btn" title="Check the board">✓<span class="tool-label">Check</span></button>
-      <button id="tool-hint" class="tool-btn" title="Get a reasoned hint (H)">💡<span class="tool-label">Hint</span></button>
-      <button id="tool-restart" class="tool-btn" title="Restart the case">⟲<span class="tool-label">Reset</span></button>
-      <button id="tool-accuse" class="accuse-btn" aria-disabled="true" title="Place everyone validly to accuse">⚖️ Accuse</button>
+      <button id="tool-xmark" class="tool-btn" aria-pressed="false"></button>
+      <button id="tool-undo" class="tool-btn"></button>
+      <button id="tool-redo" class="tool-btn"></button>
+      <button id="tool-check" class="tool-btn"></button>
+      <button id="tool-hint" class="tool-btn"></button>
+      <button id="tool-restart" class="tool-btn"></button>
+      <button id="tool-accuse" class="accuse-btn" aria-disabled="true"></button>
     </div>
 
     <div class="settings-row">
-      <label class="switch"><input type="checkbox" id="opt-live"> <span>Live error check</span></label>
-      <label class="switch"><input type="checkbox" id="opt-autox"> <span>Auto-✕ rows &amp; columns</span></label>
+      <label class="switch"><input type="checkbox" id="opt-live"> <span id="opt-live-label"></span></label>
+      <label class="switch"><input type="checkbox" id="opt-autox"> <span id="opt-autox-label"></span></label>
     </div>
   </section>
 </main>
@@ -93,14 +90,14 @@
 <dialog id="dlg-story" class="dlg">
   <h2 id="dlg-story-title"></h2>
   <p id="dlg-story-text" class="story-text"></p>
-  <div class="dlg-actions"><button class="primary-btn" data-close>Begin the investigation</button></div>
+  <div class="dlg-actions"><button id="story-close" class="primary-btn" data-close></button></div>
 </dialog>
 
 <dialog id="dlg-accuse" class="dlg">
-  <h2>Who did it?</h2>
-  <p class="dlg-sub">The murderer was <strong>alone with the victim</strong> in the same room.</p>
+  <h2></h2>
+  <p class="dlg-sub"></p>
   <div id="accuse-lineup" class="lineup"></div>
-  <div class="dlg-actions"><button class="ghost-btn" data-close>Not yet</button></div>
+  <div class="dlg-actions"><button id="accuse-close" class="ghost-btn" data-close></button></div>
 </dialog>
 
 <dialog id="dlg-verdict" class="dlg">
@@ -115,47 +112,31 @@
 </dialog>
 
 <dialog id="dlg-hint" class="dlg">
-  <h2>🔍 A deduction</h2>
+  <h2></h2>
   <p id="hint-text" class="story-text"></p>
   <div class="dlg-actions">
-    <button class="ghost-btn" data-close>Keep it to myself</button>
-    <button id="hint-apply" class="primary-btn">Show me on the map</button>
+    <button id="hint-close" class="ghost-btn" data-close></button>
+    <button id="hint-apply" class="primary-btn"></button>
   </div>
 </dialog>
 
 <dialog id="dlg-confirm" class="dlg">
-  <h2 id="confirm-title">Are you sure?</h2>
+  <h2 id="confirm-title"></h2>
   <p id="confirm-text" class="story-text"></p>
   <div class="dlg-actions">
-    <button class="ghost-btn" data-close>Cancel</button>
-    <button id="confirm-yes" class="primary-btn">Yes, do it</button>
+    <button id="confirm-cancel" class="ghost-btn" data-close></button>
+    <button id="confirm-yes" class="primary-btn"></button>
   </div>
 </dialog>
 
 <dialog id="dlg-help" class="dlg dlg-wide">
-  <h2>How to play Murdoku</h2>
+  <h2></h2>
   <div class="help-body">
-    <ol class="help-steps">
-      <li><strong>The map is the crime scene.</strong> It is divided into colored rooms.
-        Squares with furniture are blocked — nobody can stand there.</li>
-      <li><strong>Place every person</strong> — the suspects <em>and</em> the victim —
-        on empty squares so that <strong>each row and each column contains exactly one person</strong>.</li>
-      <li><strong>Clues are rules, not hints.</strong> Every statement on every card must be
-        true in your final layout. <em>“Beside”</em> means directly adjacent horizontally or
-        vertically <strong>and in the same room</strong> — never diagonally, and never across
-        a wall. <em>“South of”</em> means strictly lower on the map.</li>
-      <li><strong>Mark impossibilities.</strong> Use the ✕ tool (or right-click / long-press)
-        to cross out squares a person can't occupy. Good detectives eliminate first.</li>
-      <li><strong>Find the murderer.</strong> When the layout is solved, the murderer is the
-        person who ends up <strong>alone with the victim in the same room</strong>. Make your accusation!</li>
-    </ol>
-    <p class="help-note">Every case has <strong>exactly one solution</strong>, and none of them
-      ever requires guessing — there is always a next deduction to find.</p>
-    <p class="help-kbd"><strong>Keyboard:</strong> arrows move around the map · <kbd>1</kbd>–<kbd>9</kbd>
-      select a person · <kbd>Enter</kbd> place · <kbd>X</kbd> cross out · <kbd>M</kbd> mark tool ·
-      <kbd>H</kbd> hint · <kbd>Ctrl</kbd>+<kbd>Z</kbd>/<kbd>Y</kbd> undo/redo · <kbd>Esc</kbd> cancel.</p>
+    <ol class="help-steps"></ol>
+    <p class="help-note"></p>
+    <p class="help-kbd"></p>
   </div>
-  <div class="dlg-actions"><button class="primary-btn" data-close>Got it</button></div>
+  <div class="dlg-actions"><button id="help-close" class="primary-btn" data-close></button></div>
 </dialog>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>

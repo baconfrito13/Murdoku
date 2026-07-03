@@ -7,6 +7,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   idx, neighbors4, rowColConflicts, impliedMurderer, victimOf, floorCells,
+  derivedVictimCell,
 } from '../js/engine/model.js';
 import { evalClue, clueText } from '../js/engine/clues.js';
 import { countSolutions, logicSolve, murdererOfSolution, nextHint } from '../js/engine/solver.js';
@@ -148,6 +149,34 @@ test('impliedMurderer requires exactly one suspect with the victim', () => {
   // move a into east hall too -> two suspects with victim -> null
   const place2 = new Map([['a', idx(0, 1, 3)], ['b', idx(1, 2, 3)], ['v', idx(2, 1, 3)]]);
   assert.equal(impliedMurderer(cse, place2), null);
+});
+
+test('victim reveal: the free row × free column crossing is the victim square', () => {
+  const cse = tinyCase();
+  // suspects a,b placed; victim v NOT placed by the player
+  const place = new Map([['a', idx(0, 0, 3)], ['b', idx(1, 2, 3)], ['v', null]]);
+  // free row = 2, free col = 1 -> cell (2,1)
+  assert.equal(derivedVictimCell(cse, place), idx(2, 1, 3));
+  // incomplete -> null
+  assert.equal(derivedVictimCell(cse, new Map([['a', idx(0, 0, 3)], ['v', null]])), null);
+  // conflicting suspects -> null
+  assert.equal(derivedVictimCell(cse, new Map([
+    ['a', idx(0, 0, 3)], ['b', idx(0, 2, 3)], ['v', null]])), null);
+  // crossing blocked by furniture -> null (free row 1 × free col 1 = center plant)
+  const place2 = new Map([['a', idx(0, 0, 3)], ['b', idx(2, 2, 3)], ['v', null]]);
+  assert.equal(derivedVictimCell(cse, place2), null);
+});
+
+test('every campaign case: the victim square is derivable from the suspect layout', () => {
+  for (const cse of CAMPAIGN_CASES) {
+    const victim = victimOf(cse);
+    const suspectsOnly = new Map(
+      cse.people.filter((p) => !p.isVictim).map((p) => [p.id, cse.solution[p.id]]),
+    );
+    suspectsOnly.set(victim.id, null);
+    assert.equal(derivedVictimCell(cse, suspectsOnly), cse.solution[victim.id],
+      `${cse.id}: derived victim square must equal the frozen solution`);
+  }
 });
 
 test('countSolutions enumerates the unconstrained tiny board correctly', () => {

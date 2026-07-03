@@ -216,30 +216,31 @@ export function gradeDifficulty(cse) {
 // Hint engine: given the player's current placements/marks, produce the next
 // justified deduction as {personId, cell, reason} or an error correction.
 // ---------------------------------------------------------------------------
-export function nextHint(cse, playerPlacement, objectNames) {
+export function nextHint(cse, playerPlacement, objectNames, strings = null) {
+  const victim = victimOf(cse);
+  const mistakeText = strings?.mistake
+    ?? ((name) => `${name} is misplaced — re-check the clues on that card.`);
+  const focusText = strings?.focus
+    ?? ((name, clues) => clues
+      ? `Focus on ${name}: ${clues}. Combined with the one-per-row-and-column rule, only one square works.`
+      : `Focus on ${name}: after everyone else's clues and the one-per-row-and-column rule, only one square remains.`);
+
   // 1. If a player placement contradicts the unique solution, flag it first.
+  //    (The victim is derived, never player-placed — skip it.)
   for (const [pid, cell] of playerPlacement) {
+    if (pid === victim.id) continue;
     if (cell != null && cse.solution[pid] !== cell && cse.givens?.[pid] == null) {
       const person = cse.people.find((p) => p.id === pid);
-      return {
-        type: 'mistake',
-        personId: pid,
-        cell,
-        reason: `${person.name} is misplaced — re-check the clues on that card.`,
-      };
+      return { type: 'mistake', personId: pid, cell, reason: mistakeText(person.name) };
     }
   }
 
-  // 2. Run the logic engine, then suggest the easiest person to fix next:
-  //    prefer someone the engine has already narrowed to a single cell and
-  //    the player hasn't placed yet.
+  // 2. Run the logic engine, then suggest the easiest SUSPECT to fix next.
   const { cands } = logicSolve(cse);
   const unplaced = cse.people
-    .filter((p) => playerPlacement.get(p.id) == null)
+    .filter((p) => !p.isVictim && playerPlacement.get(p.id) == null)
     .map((p) => p.id);
 
-  // Build candidates *relative to player's correct placements* for sharper
-  // explanations: start from engine candidates, remove player-used rows/cols.
   let best = null;
   for (const pid of unplaced) {
     const set = cands.get(pid);
@@ -251,11 +252,8 @@ export function nextHint(cse, playerPlacement, objectNames) {
   const cell = cse.solution[best];
   const person = cse.people.find((p) => p.id === best);
   const ownClues = cse.clues.filter((c) => c.owner === best);
-  const clueBits = ownClues.map((c) => `“${clueText(cse, c, objectNames)}”`).join(' and ');
-  const reason = ownClues.length
-    ? `Focus on ${person.name}: ${clueBits}. Combined with the one-per-row-and-column rule, only one square works.`
-    : `Focus on ${person.name}: after everyone else's clues and the one-per-row-and-column rule, only one square remains.`;
-  return { type: 'place', personId: best, cell, reason };
+  const clueBits = ownClues.map((c) => `“${clueText(cse, c, objectNames)}”`).join(strings?.and ?? ' and ');
+  return { type: 'place', personId: best, cell, reason: focusText(person.name, ownClues.length ? clueBits : null) };
 }
 
 // Validate the murder rule for a case's frozen solution.

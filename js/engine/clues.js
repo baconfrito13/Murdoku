@@ -212,36 +212,17 @@ export function filterAlone(cse, clue, cands) {
 }
 
 // ---------------------------------------------------------------------------
-// Prose rendering — original wording.
+// Prose rendering — language-aware, original wording (see js/i18n.js).
 // ---------------------------------------------------------------------------
-const DIR_WORD = { north: 'north', south: 'south', east: 'east', west: 'west' };
+import { clueProse } from '../i18n.js';
 
 export function clueText(cse, clue, objectNames) {
-  const name = (pid) => cse.people.find((p) => p.id === pid).name;
-  const room = (r) => cse.rooms[r].name;
-  const obj = (t) => objectNames?.[t]?.label || t;
-  const objPlural = (t) => objectNames?.[t]?.plural || `${obj(t)}s`;
-
-  switch (clue.kind) {
-    case 'in_room': return `was in the ${room(clue.room)}`;
-    case 'not_in_room': return `was not in the ${room(clue.room)}`;
-    case 'beside_object': return `was beside a ${obj(clue.objType)}`;
-    case 'not_beside_object': return `was not beside any ${obj(clue.objType)}`;
-    case 'same_row_object': return `was in the same row as a ${obj(clue.objType)}`;
-    case 'same_col_object': return `was in the same column as a ${obj(clue.objType)}`;
-    case 'dir_of_object': {
-      const count = furnitureCellsOfType(cse, clue.objType).length;
-      return count > 1
-        ? `was ${DIR_WORD[clue.dir]} of every ${obj(clue.objType)}`
-        : `was ${DIR_WORD[clue.dir]} of the ${obj(clue.objType)}`;
-    }
-    case 'dir_of_person': return `was ${DIR_WORD[clue.dir]} of ${name(clue.other)}`;
-    case 'beside_person': return `was beside ${name(clue.other)}`;
-    case 'not_beside_person': return `was not beside ${name(clue.other)}`;
-    case 'same_room_person': return `was in the same room as ${name(clue.other)}`;
-    case 'not_same_room_person': return `was not in the same room as ${name(clue.other)}`;
-    case 'alone': return `was alone in a room`;
-    case 'edge': return `was against the ${DIR_WORD[clue.dir]} wall`;
-    default: return JSON.stringify(clue);
-  }
+  const owner = cse.people.find((p) => p.id === clue.owner);
+  return clueProse(clue, {
+    roomName: (r) => cse.rooms[r].name,
+    personName: (pid) => cse.people.find((p) => p.id === pid).name,
+    objEn: (t) => objectNames?.[t] ?? { label: t, plural: `${t}s` },
+    objCount: (t) => furnitureCellsOfType(cse, t).length,
+    ownerGender: owner?.g ?? 'm',
+  });
 }

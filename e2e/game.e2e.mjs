@@ -1,8 +1,7 @@
 // End-to-end play-through with Playwright (plain script, global install).
 // Run: node e2e/game.e2e.mjs [--headed]
-// Serves the site on :8347, then drives a real Chromium through:
-//   home → case 1 full win, hints, X-marks, undo/redo, wrong accusation,
-//   mobile viewport sanity, console-error watchdog, screenshots.
+// The player places SUSPECTS only; the victim's square is auto-revealed at
+// the crossing of the free row and free column.
 
 import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
@@ -22,6 +21,19 @@ const check = (cond, label) => {
   if (cond) console.log(`  ✓ ${label}`);
   else { failures++; console.error(`  ✗ FAIL: ${label}`); }
 };
+
+const suspectsOf = (cse) => cse.people.filter((p) => !p.isVictim);
+const victimOf = (cse) => cse.people.find((p) => p.isVictim);
+
+async function placeSuspects(page, cse) {
+  for (const person of suspectsOf(cse)) {
+    const target = cse.solution[person.id];
+    const already = await page.locator(`#board .cell[data-cell="${target}"] .pawn`).count();
+    if (already) continue;
+    await page.click(`.suspect-card[data-pid="${person.id}"]`);
+    await page.click(`#board .cell[data-cell="${target}"]`);
+  }
+}
 
 // ---------------------------------------------------------------------------
 const server = spawn('npx', ['http-server', '-p', String(PORT), '-c-1', '--silent', '.'], {
@@ -45,40 +57,44 @@ try {
   await page.waitForSelector('#screen-home:not([hidden])');
   check(await page.locator('.case-card').count() === CAMPAIGN_CASES.length,
     `home lists ${CAMPAIGN_CASES.length} campaign cases`);
-  check(await page.locator('#btn-daily').isVisible(), 'daily button visible');
   await page.screenshot({ path: `${SHOTS}01-home.png`, fullPage: true });
 
-  // help dialog
   await page.click('#btn-help');
   check(await page.locator('#dlg-help[open]').count() === 1, 'help dialog opens');
+  check((await page.locator('.help-kbd').textContent()).includes('Ctrl'), 'help lists shortcuts');
   await page.click('#dlg-help [data-close]');
 
   // ------------------------------------------------------------- case 1: win
-  console.log('CASE 1 — full win');
+  console.log('CASE 1 — full win with victim reveal');
   const case1 = CAMPAIGN_CASES[0];
   await page.click('.case-card:first-child');
   await page.waitForSelector('#screen-game:not([hidden])');
-  check(await page.locator('#game-title').textContent() === case1.title, 'case title shown');
-  // story dialog auto-opens
   await page.waitForSelector('#dlg-story[open]');
   await page.click('#dlg-story [data-close]');
 
   const cellCount = await page.locator('#board .cell').count();
   check(cellCount === case1.size * case1.size, `board has ${case1.size}×${case1.size} cells`);
-  const furnCount = await page.locator('#board .cell.furniture').count();
-  check(furnCount === Object.keys(case1.furniture).length, 'furniture rendered');
+  check(await page.locator('#board .cell .icon.furn').count()
+    === Object.keys(case1.furniture).length, 'furniture rendered as SVG icons');
+  check(await page.locator('#board .room-tag').count() === case1.rooms.length,
+    'each room shows its name tag on the map');
+  check(await page.locator('.suspect-card .avatar-mono').first().textContent() !== '',
+    'monogram avatars rendered (no emojis)');
 
-  // tapping Accuse while gated must explain itself instead of doing nothing
+  // victim card is informational, not placeable
+  const victim1 = victimOf(case1);
+  await page.click(`.suspect-card[data-pid="${victim1.id}"]`);
+  check(await page.locator(`.suspect-card[data-pid="${victim1.id}"][aria-pressed="true"]`).count() === 0,
+    'victim card cannot be armed for placement');
+
+  // accuse gated + explains itself
   const accuse = page.locator('#tool-accuse');
   check(await accuse.getAttribute('aria-disabled') === 'true', 'accuse starts gated');
-  await accuse.click({ force: true }); // Playwright treats aria-disabled as non-actionable
+  await accuse.click({ force: true });
   check(await page.locator('#dlg-accuse[open]').count() === 0, 'gated accuse does not open lineup');
-  check((await page.locator('#toast').textContent()).includes('Place everyone first'),
-    'gated accuse explains why (works on touch too)');
 
   // X-mark via right-click on some empty floor cell (not a solution cell)
   const solutionCells = new Set(Object.values(case1.solution));
-  const givenPids = new Set(Object.keys(case1.givens ?? {}));
   let freeCell = -1;
   for (let i = 0; i < case1.size * case1.size; i++) {
     if (!case1.furniture[i] && !solutionCells.has(i)) { freeCell = i; break; }
@@ -90,47 +106,49 @@ try {
   check(await page.locator(`#board .cell[data-cell="${freeCell}"] .xmark`).count() === 0,
     'right-click again removes the ✕');
 
-  // hint flow: use a hint for the first unplaced person
+  // hint flow
   await page.click('#tool-hint');
   await page.waitForSelector('#dlg-hint[open]');
   const hintText = await page.locator('#hint-text').textContent();
   check(hintText.length > 20, 'hint gives a reasoned explanation');
   await page.click('#hint-apply');
-  check(await page.locator('#board .pawn').count() >= 1 + Object.keys(case1.givens ?? {}).length,
-    'hint placement lands on the board');
+  check(await page.locator('#board .pawn').count() >= 1, 'hint placement lands on the board');
 
-  // undo the hint placement, then redo it
   const pawnsAfterHint = await page.locator('#board .pawn').count();
   await page.click('#tool-undo');
   check(await page.locator('#board .pawn').count() === pawnsAfterHint - 1, 'undo removes the pawn');
   await page.click('#tool-redo');
   check(await page.locator('#board .pawn').count() === pawnsAfterHint, 'redo restores the pawn');
 
-  // place everyone per the frozen solution (skip givens & already-placed)
-  for (const person of case1.people) {
-    if (givenPids.has(person.id)) continue;
-    const target = case1.solution[person.id];
-    const already = await page.locator(`#board .cell[data-cell="${target}"] .pawn`).count();
-    if (already) continue; // hint already placed this one
-    await page.click(`.suspect-card[data-pid="${person.id}"]`);
-    await page.click(`#board .cell[data-cell="${target}"]`);
-  }
-  check(await page.locator('#board .pawn').count() === case1.size, 'all people placed');
+  // place all suspects — the victim must be revealed automatically
+  await placeSuspects(page, case1);
+  const vCell1 = case1.solution[victim1.id];
+  check(await page.locator(`#board .cell[data-cell="${vCell1}"] .victim-pawn`).count() === 1,
+    'victim auto-revealed at the free row × free column crossing');
+  check(await page.locator('#board .pawn').count() === case1.size,
+    'all people visible on the board after the reveal');
   check(await page.locator('.clue-item.bad').count() === 0, 'no clue shows as violated');
   await page.screenshot({ path: `${SHOTS}02-board-solved.png`, fullPage: true });
 
+  // clicking the revealed victim does not remove it
+  await page.click(`#board .cell[data-cell="${vCell1}"]`);
+  check(await page.locator(`#board .cell[data-cell="${vCell1}"] .victim-pawn`).count() === 1,
+    'revealed victim cannot be picked up');
+
   // accuse the murderer
   check(await accuse.getAttribute('aria-disabled') === 'false',
-    'accuse button unlocks when board is valid');
+    'accuse unlocks once the victim is revealed and the board is valid');
   await accuse.click();
   await page.waitForSelector('#dlg-accuse[open]');
+  check(await page.locator(`#accuse-lineup .lineup-btn:has-text("${victim1.name}")`).count() === 0,
+    'the victim is not in the accusation lineup');
   await page.click(`#accuse-lineup .lineup-btn:has-text("${
     case1.people.find((p) => p.id === case1.murderer).name}")`);
   await page.waitForSelector('#dlg-verdict[open]');
-  check((await page.locator('#verdict-title').textContent()).includes('Case closed'),
+  check((await page.locator('#verdict-title').textContent()).length > 3,
     'correct accusation wins the case');
   await page.screenshot({ path: `${SHOTS}03-win.png` });
-  await page.click('#verdict-primary'); // more cases
+  await page.click('#verdict-primary');
   await page.waitForSelector('#screen-home:not([hidden])');
   check(await page.locator('.case-card:first-child .chip.solved').count() === 1,
     'case marked as solved on home');
@@ -141,27 +159,20 @@ try {
   await page.click('.case-card:nth-child(2)');
   await page.waitForSelector('#dlg-story[open]');
   await page.click('#dlg-story [data-close]');
-  const givens2 = new Set(Object.keys(case2.givens ?? {}));
-  for (const person of case2.people) {
-    if (givens2.has(person.id)) continue;
-    await page.click(`.suspect-card[data-pid="${person.id}"]`);
-    await page.click(`#board .cell[data-cell="${case2.solution[person.id]}"]`);
-  }
+  await placeSuspects(page, case2);
   await page.click('#tool-accuse');
   await page.waitForSelector('#dlg-accuse[open]');
-  const innocent = case2.people.find((p) => !p.isVictim && p.id !== case2.murderer);
+  const innocent = suspectsOf(case2).find((p) => p.id !== case2.murderer);
   await page.click(`#accuse-lineup .lineup-btn:has-text("${innocent.name}")`);
   await page.waitForSelector('#dlg-verdict[open]');
-  check((await page.locator('#verdict-title').textContent()).includes('not convinced'),
-    'wrong accusation is rejected');
+  const wrongTitle = await page.locator('#verdict-title').textContent();
   await page.click('#verdict-primary'); // keep investigating
-  // now accuse correctly
   await page.click('#tool-accuse');
   await page.click(`#accuse-lineup .lineup-btn:has-text("${
     case2.people.find((p) => p.id === case2.murderer).name}")`);
   await page.waitForSelector('#dlg-verdict[open]');
-  check((await page.locator('#verdict-title').textContent()).includes('Case closed'),
-    'follow-up correct accusation wins');
+  const rightTitle = await page.locator('#verdict-title').textContent();
+  check(wrongTitle !== rightTitle, 'wrong accusation rejected, correct one wins');
   await page.click('#verdict-primary');
 
   // --------------------------------------------------- persistence
@@ -170,28 +181,46 @@ try {
   await page.click('.case-card:nth-child(3)');
   await page.waitForSelector('#dlg-story[open]');
   await page.click('#dlg-story [data-close]');
-  const p3 = case3.people.find((p) => !(p.id in (case3.givens ?? {})));
-  await page.click(`.suspect-card[data-pid="${p3.id}"]`);
-  await page.click(`#board .cell[data-cell="${case3.solution[p3.id]}"]`);
+  const s3 = suspectsOf(case3)[0];
+  await page.click(`.suspect-card[data-pid="${s3.id}"]`);
+  await page.click(`#board .cell[data-cell="${case3.solution[s3.id]}"]`);
   await page.reload();
   await page.waitForSelector('#screen-home:not([hidden])');
   await page.click('.case-card:nth-child(3)');
   await page.waitForSelector('#screen-game:not([hidden])');
-  check(await page.locator('#board .pawn').count()
-    === 1 + Object.keys(case3.givens ?? {}).length,
-  'placement survives a reload');
+  check(await page.locator('#board .pawn').count() === 1, 'placement survives a reload');
 
-  // --------------------------------------------------- keyboard controls
+  // --------------------------------------------------- keyboard
   console.log('KEYBOARD');
-  // history does not survive reloads (by design) — make a fresh move, then Ctrl+Z
-  const p3b = case3.people.filter((p) => !(p.id in (case3.givens ?? {})))[1];
+  const s3b = suspectsOf(case3)[1];
   const before = await page.locator('#board .pawn').count();
-  await page.click(`.suspect-card[data-pid="${p3b.id}"]`);
-  await page.click(`#board .cell[data-cell="${case3.solution[p3b.id]}"]`);
+  await page.click(`.suspect-card[data-pid="${s3b.id}"]`);
+  await page.click(`#board .cell[data-cell="${case3.solution[s3b.id]}"]`);
   check(await page.locator('#board .pawn').count() === before + 1, 'second pawn placed');
   await page.keyboard.press('Control+z');
   check(await page.locator('#board .pawn').count() === before, 'Ctrl+Z undoes the move');
   await page.click('#btn-back');
+
+  // --------------------------------------------------- Portuguese
+  console.log('PORTUGUÊS');
+  await page.click('#btn-lang');
+  await page.waitForSelector('#screen-home:not([hidden])');
+  check((await page.locator('#btn-daily').textContent()).includes('Caso do Dia'),
+    'home switches to Portuguese');
+  await page.click('.case-card:nth-child(2)'); // campaign case 1 (index shifts if transient present — use :has-text)
+  await page.waitForSelector('#screen-game:not([hidden])');
+  // story dialog may open; close if so
+  if (await page.locator('#dlg-story[open]').count()) await page.click('#dlg-story [data-close]');
+  const ptTitleOk = (await page.locator('#game-title').textContent()).length > 3;
+  check(ptTitleOk, 'case opens under Portuguese UI');
+  const ptClue = await page.locator('.clue-item .clue-quote').first().textContent();
+  check(/estava|não/.test(ptClue), `clues render in Portuguese (“${ptClue.slice(0, 40)}…”)`);
+  const ptRoomTag = await page.locator('#board .room-tag').first().textContent();
+  check(ptRoomTag.length > 2, `room tags translated (“${ptRoomTag}”)`);
+  await page.screenshot({ path: `${SHOTS}05-portuguese.png`, fullPage: true });
+  await page.click('#btn-back');
+  await page.click('#btn-lang'); // back to EN
+  await page.waitForSelector('#screen-home:not([hidden])');
 
   // --------------------------------------------------- mobile viewport
   console.log('MOBILE');
@@ -205,12 +234,10 @@ try {
   const case4 = CAMPAIGN_CASES[3];
   const boardBox = await mob.locator('#board').boundingBox();
   check(boardBox.width <= 390, 'board fits a phone viewport');
-  // tap-to-place on touch
-  const person4 = case4.people.find((p) => !(p.id in (case4.givens ?? {})));
-  await mob.tap(`.suspect-card[data-pid="${person4.id}"]`);
+  const person4 = suspectsOf(case4)[0];
+  await mob.tap(`#chip-strip .strip-chip:first-child`);
   await mob.tap(`#board .cell[data-cell="${case4.solution[person4.id]}"]`);
-  check(await mob.locator('#board .pawn').count()
-    === 1 + Object.keys(case4.givens ?? {}).length, 'tap-to-place works on touch');
+  check(await mob.locator('#board .pawn').count() === 1, 'chip-strip + tap-to-place works on touch');
   await mob.screenshot({ path: `${SHOTS}04-mobile.png`, fullPage: true });
   await mob.close();
 

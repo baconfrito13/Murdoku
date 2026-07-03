@@ -8,9 +8,11 @@ cases, characters, art and writing.
 
 1. The board is an N×N map of a crime scene, partitioned into colored, contiguous
    **rooms**. Some cells contain **furniture/objects** (nobody can stand there).
-2. The **people** — (N−1) suspects plus **the victim** — must each be placed on an
-   empty floor cell so that **every row and every column contains exactly one
-   person** (the sudoku pressure).
+2. The player places the **(N−1) suspects** on empty floor cells so that
+   **every row and every column contains at most one person** (the sudoku
+   pressure). With all suspects placed, exactly one row and one column remain
+   free — their crossing is **revealed as the victim's square** (the "final
+   V"). The victim is never placed by hand.
 3. Every person's card lists **clues**, and *every clue must be true* in the final
    layout. Clue vocabulary:
    - **Rooms** — "was in the Library" / "was not in the Kitchen"

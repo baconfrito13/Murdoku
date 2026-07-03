@@ -7,12 +7,12 @@ import { THEMES, TROUPE, pickTroupe } from './roster.js';
 import { Rng } from './engine/rng.js';
 
 const VICTIM_POOL = [
-  { id: 'v_daily1', name: 'Mayor Cornelius Vex', role: 'the untouchable mayor', emoji: '🎩' },
-  { id: 'v_daily2', name: 'Grand Duchess Milla', role: 'the exiled duchess', emoji: '👑' },
-  { id: 'v_daily3', name: 'Silas Copperfield', role: 'the pawnbroker', emoji: '🪙' },
-  { id: 'v_daily4', name: 'Nurse Beatrix Hollow', role: 'the night nurse', emoji: '🌙' },
-  { id: 'v_daily5', name: 'Redmond Ledger', role: 'the bookmaker', emoji: '📒' },
-  { id: 'v_daily6', name: 'Miss Juniper Vale', role: 'the fortune teller', emoji: '🔮' },
+  { id: 'v_daily1', g: 'm', name: 'Mayor Cornelius Vex', role: 'the untouchable mayor', emoji: '🎩' },
+  { id: 'v_daily2', g: 'f', name: 'Grand Duchess Milla', role: 'the exiled duchess', emoji: '👑' },
+  { id: 'v_daily3', g: 'm', name: 'Silas Copperfield', role: 'the pawnbroker', emoji: '🪙' },
+  { id: 'v_daily4', g: 'f', name: 'Nurse Beatrix Hollow', role: 'the night nurse', emoji: '🌙' },
+  { id: 'v_daily5', g: 'm', name: 'Redmond Ledger', role: 'the bookmaker', emoji: '📒' },
+  { id: 'v_daily6', g: 'f', name: 'Miss Juniper Vale', role: 'the fortune teller', emoji: '🔮' },
 ];
 
 const INTROS = [
@@ -35,28 +35,32 @@ export function dateSeed(d = new Date()) {
 export function makeDailyCase(date = new Date()) {
   return makeSeededCase(dateSeed(date), {
     id: `daily-${dateSeed(date)}`,
-    titlePrefix: "Today's Case",
+    kind: 'daily',
   });
 }
 
 export function makeRandomCase() {
   const seed = `random-${Math.floor(Math.random() * 1e9)}`;
-  return makeSeededCase(seed, { id: seed, titlePrefix: 'Cold Case' });
+  return makeSeededCase(seed, { id: seed, kind: 'random' });
 }
 
-function makeSeededCase(seed, { id, titlePrefix }) {
+function makeSeededCase(seed, { id, kind }) {
   const rng = new Rng(`${seed}-meta`);
   const themeKey = rng.pick(Object.keys(THEMES));
   const size = rng.pick([5, 6, 6]); // browser-friendly sizes, bias to 6
   const difficulty = rng.pick(['easy', 'medium', 'medium']);
   const suspects = rng.shuffle(TROUPE.map((t) => t.id)).slice(0, size - 1);
   const victim = { ...rng.pick(VICTIM_POOL), isVictim: true, color: '#94a3b8' };
+  const introIdx = rng.int(INTROS.length);
+  const revealIdx = rng.int(REVEALS.length);
   const themeName = themeKey[0].toUpperCase() + themeKey.slice(1);
 
+  // English fallback story lives on the case; the UI renders titles/intros/
+  // reveals via i18n using `meta`, so generated cases translate too.
   const story = {
-    title: `${titlePrefix}: Death at the ${themeName}`,
-    intro: rng.pick(INTROS),
-    reveal: rng.pick(REVEALS),
+    title: `Death at the ${themeName}`,
+    intro: INTROS[introIdx],
+    reveal: REVEALS[revealIdx],
   };
 
   // The generator retries internally; try a couple of meta-seeds too so this
@@ -74,6 +78,7 @@ function makeSeededCase(seed, { id, titlePrefix }) {
     if (cse) {
       cse.difficulty = difficulty;
       cse.title = story.title;
+      cse.meta = { kind, themeKey, introIdx, revealIdx };
       return cse;
     }
   }

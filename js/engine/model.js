@@ -71,6 +71,31 @@ export function victimOf(cse) {
   return cse.people.find((p) => p.isVictim);
 }
 
+// The victim's square is never placed by the player: with every suspect on
+// the board (one per row and column), exactly one row and one column remain
+// free — their crossing is where the body lies. Returns the derived cell, or
+// null while suspects are missing/conflicting or the crossing is blocked.
+export function derivedVictimCell(cse, placement) {
+  const n = cse.size;
+  const victim = victimOf(cse);
+  const rows = new Array(n).fill(false);
+  const cols = new Array(n).fill(false);
+  let placed = 0;
+  for (const [pid, cell] of placement) {
+    if (pid === victim.id || cell == null) continue;
+    const r = rowOf(cell, n), c = colOf(cell, n);
+    if (rows[r] || cols[c]) return null; // conflict — no unique free line
+    rows[r] = true; cols[c] = true;
+    placed++;
+  }
+  if (placed !== cse.people.length - 1) return null;
+  const freeRow = rows.indexOf(false);
+  const freeCol = cols.indexOf(false);
+  const cell = idx(freeRow, freeCol, n);
+  if (cse.furniture[cell]) return null; // blocked crossing — a placement is wrong
+  return cell;
+}
+
 // The murderer implied by a full placement: the single suspect sharing the
 // victim's room. Returns null if not exactly one suspect is with the victim.
 export function impliedMurderer(cse, placement) {
