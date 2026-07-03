@@ -35,7 +35,8 @@ export function countSolutions(cse, { limit = 2, extra = null } = {}) {
   for (const pid of people) {
     const given = cse.givens?.[pid];
     let cells = given != null ? [given] : floors.slice();
-    cells = cells.filter((c) => unaries.get(pid).every((cl) => unaryAllows(cse, cl, c)));
+    cells = cells.filter((c) => !cse.furniture[c]
+      && unaries.get(pid).every((cl) => unaryAllows(cse, cl, c)));
     cands.set(pid, cells);
   }
 
