@@ -67,6 +67,7 @@ const UI = {
     statHints: (n) => `💡 ${n} hint${n === 1 ? '' : 's'}`,
     statMistakes: (n) => `✗ ${n} mistake${n === 1 ? '' : 's'}`,
     deadSecrets: 'The dead keep their secrets.',
+    victimCard: 'The victim. Whoever ended up alone with them is the murderer.',
     victimRevealHint: 'The last free square — one row, one column — will reveal where the body lies.',
     noStatement: 'No statement given.',
     stmtHolds: 'statement holds: ', stmtBroken: 'statement broken: ',
@@ -149,6 +150,7 @@ const UI = {
     statHints: (n) => `💡 ${n} dica${n === 1 ? '' : 's'}`,
     statMistakes: (n) => `✗ ${n} erro${n === 1 ? '' : 's'}`,
     deadSecrets: 'Os mortos guardam os seus segredos.',
+    victimCard: 'A vítima. Quem ficou sozinho com ela é o assassino.',
     victimRevealHint: 'A última casa livre — uma linha, uma coluna — revelará onde jaz o corpo.',
     noStatement: 'Sem declaração.',
     stmtHolds: 'declaração verdadeira: ', stmtBroken: 'declaração violada: ',
@@ -313,6 +315,11 @@ export function clueProse(clue, ctx) {
           ? `estava a ${d} de ${todos(o)}`
           : `estava a ${d} ${doDa(o)}`;
       case 'dir_of_person': return `estava a ${d} de ${ctx.personName(clue.other)}`;
+      case 'dist_of_person': {
+        const unit = (clue.dir === 'north' || clue.dir === 'south') ? 'linha' : 'coluna';
+        const units = clue.n === 1 ? unit : `${unit}s`;
+        return `estava exatamente ${clue.n} ${units} a ${d} de ${ctx.personName(clue.other)}`;
+      }
       case 'beside_person': return `estava ao lado de ${ctx.personName(clue.other)}`;
       case 'not_beside_person': return `não estava ao lado de ${ctx.personName(clue.other)}`;
       case 'same_room_person': return `estava na mesma divisão que ${ctx.personName(clue.other)}`;
@@ -336,6 +343,10 @@ export function clueProse(clue, ctx) {
         ? `was ${d} of every ${obj.label}`
         : `was ${d} of the ${obj.label}`;
     case 'dir_of_person': return `was ${d} of ${ctx.personName(clue.other)}`;
+    case 'dist_of_person': {
+      const unit = (clue.dir === 'north' || clue.dir === 'south') ? 'row' : 'column';
+      return `was exactly ${clue.n} ${unit}${clue.n === 1 ? '' : 's'} ${d} of ${ctx.personName(clue.other)}`;
+    }
     case 'beside_person': return `was beside ${ctx.personName(clue.other)}`;
     case 'not_beside_person': return `was not beside ${ctx.personName(clue.other)}`;
     case 'same_room_person': return `was in the same room as ${ctx.personName(clue.other)}`;

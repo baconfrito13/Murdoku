@@ -14,6 +14,9 @@
 //   same_col_object  {objType}
 //   dir_of_object    {objType, dir}        strictly N/S/E/W of EVERY such object
 //   dir_of_person    {other, dir}          strictly N/S/E/W of `other`
+//   dist_of_person   {other, dir, n}       exactly n rows/columns N/S/E/W of
+//                                          `other` (any position on the other
+//                                          axis, any area)
 //   beside_person    {other}
 //   not_beside_person{other}
 //   same_room_person {other}
@@ -90,6 +93,17 @@ export function evalClue(cse, clue, placement) {
       const other = placement.get(clue.other);
       if (other == null) return null;
       return dirHolds(cell, other, clue.dir, n);
+    }
+    case 'dist_of_person': {
+      const other = placement.get(clue.other);
+      if (other == null) return null;
+      switch (clue.dir) {
+        case 'north': return rowOf(other, n) - rowOf(cell, n) === clue.n;
+        case 'south': return rowOf(cell, n) - rowOf(other, n) === clue.n;
+        case 'west': return colOf(other, n) - colOf(cell, n) === clue.n;
+        case 'east': return colOf(cell, n) - colOf(other, n) === clue.n;
+        default: throw new Error(`bad dir ${clue.dir}`);
+      }
     }
     case 'beside_person': {
       const other = placement.get(clue.other);

@@ -59,8 +59,11 @@ export class DockView {
           el('span', { class: 'suspect-role' }, roleLabel(person.role))),
         el('span', { class: 'suspect-status' }, ''),
         el('span', { class: 'clue-wrap' },
+          // The victim's card carries the murder rule, never positional clues.
+          isV ? el('div', { class: 'clue-item victim-rule' },
+            el('span', { class: 'clue-quote' }, `“${t('victimCard')}”`)) : null,
           isV ? el('div', { class: 'no-clue victim-note' }, t('victimRevealHint')) : null,
-          clues.length
+          !isV && clues.length
             ? el('ul', { class: 'clue-list' }, clues.map((clue) => el('li', {
               class: 'clue-item',
               dataset: { clue: JSON.stringify(clue) },
@@ -68,8 +71,7 @@ export class DockView {
               el('span', { class: 'clue-state', 'aria-hidden': 'true' }, ''),
               el('span', { class: 'visually-hidden clue-sr' }, ''),
               el('span', { class: 'clue-quote' }, `“${clueText(this.case, clue, OBJECT_NAMES)}”`))))
-            : (isV ? el('div', { class: 'no-clue' }, t('deadSecrets'))
-              : el('div', { class: 'no-clue' }, t('noStatement')))),
+            : (!isV ? el('div', { class: 'no-clue' }, t('noStatement')) : null)),
       );
       this.cards.set(person.id, card);
       this.host.append(card);
@@ -88,6 +90,7 @@ export class DockView {
       status.textContent = person.isVictim ? (placed ? '†' : '') : (placed ? '📍' : '');
 
       for (const li of card.querySelectorAll('.clue-item')) {
+        if (!li.dataset.clue) continue; // the victim's fixed rule line has no state
         li.classList.remove('ok', 'bad');
         const stateGlyph = li.querySelector('.clue-state');
         const sr = li.querySelector('.clue-sr');

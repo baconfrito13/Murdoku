@@ -292,7 +292,29 @@ test('difficulty spread and clue economy', () => {
   for (const cse of CAMPAIGN_CASES) {
     assert.ok(cse.clues.length >= 3, `${cse.id}: too few clues`);
     assert.ok(cse.clues.length <= cse.size * 4, `${cse.id}: clue overload`);
+    // official victim cards never carry positional statements
+    const victim = victimOf(cse);
+    assert.equal(cse.clues.filter((c) => c.owner === victim.id).length, 0,
+      `${cse.id}: victim card must carry no positional clues`);
+    // every suspect keeps at least one statement
+    for (const p of cse.people) {
+      if (p.isVictim) continue;
+      assert.ok(cse.clues.some((c) => c.owner === p.id), `${cse.id}: ${p.id} has no clue`);
+    }
   }
+});
+
+test('exact-distance clue semantics', () => {
+  const cse = tinyCase();
+  const place = new Map([['a', idx(0, 0, 3)], ['b', idx(2, 1, 3)], ['v', idx(1, 2, 3)]]);
+  const T = (clue) => assert.equal(evalClue(cse, clue, place), true, JSON.stringify(clue));
+  const F = (clue) => assert.equal(evalClue(cse, clue, place), false, JSON.stringify(clue));
+  T({ owner: 'a', kind: 'dist_of_person', other: 'b', dir: 'north', n: 2 }); // a 2 rows above b
+  F({ owner: 'a', kind: 'dist_of_person', other: 'b', dir: 'north', n: 1 });
+  T({ owner: 'b', kind: 'dist_of_person', other: 'a', dir: 'south', n: 2 });
+  T({ owner: 'b', kind: 'dist_of_person', other: 'a', dir: 'east', n: 1 }); // b 1 col right of a
+  F({ owner: 'b', kind: 'dist_of_person', other: 'a', dir: 'west', n: 1 });
+  T({ owner: 'v', kind: 'dist_of_person', other: 'a', dir: 'east', n: 2 });
 });
 
 test('hint engine produces a correct, justified next step', () => {

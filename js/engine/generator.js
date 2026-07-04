@@ -128,6 +128,9 @@ function buildCluePool(rng, cse, solution, objTypes) {
   const push = (clue) => pool.push(clue);
 
   for (const p of people) {
+    // The victim's card never carries positional statements — the body's
+    // square is found by deduction alone (open-victim rules).
+    if (p.isVictim) continue;
     const cell = at(p.id);
     const myRoom = cse.roomOf[cell];
 
@@ -182,10 +185,19 @@ function buildCluePool(rng, cse, solution, objTypes) {
     for (const q of people) {
       if (q.id === p.id) continue;
       const other = at(q.id);
-      if (rowOf(cell, n) < rowOf(other, n)) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'north' });
-      if (rowOf(cell, n) > rowOf(other, n)) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'south' });
-      if (colOf(cell, n) < colOf(other, n)) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'west' });
-      if (colOf(cell, n) > colOf(other, n)) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'east' });
+      const dr = rowOf(cell, n) - rowOf(other, n);
+      const dc = colOf(cell, n) - colOf(other, n);
+      if (dr < 0) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'north' });
+      if (dr > 0) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'south' });
+      if (dc < 0) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'west' });
+      if (dc > 0) push({ owner: p.id, kind: 'dir_of_person', other: q.id, dir: 'east' });
+      // exact offsets ("was exactly 2 rows north of…"), sampled sparingly
+      if (dr !== 0 && rng.chance(0.35)) {
+        push({ owner: p.id, kind: 'dist_of_person', other: q.id, dir: dr < 0 ? 'north' : 'south', n: Math.abs(dr) });
+      }
+      if (dc !== 0 && rng.chance(0.35)) {
+        push({ owner: p.id, kind: 'dist_of_person', other: q.id, dir: dc < 0 ? 'west' : 'east', n: Math.abs(dc) });
+      }
       const besideQ = neighbors4(cell, n).includes(other) && cse.roomOf[other] === myRoom;
       if (besideQ) push({ owner: p.id, kind: 'beside_person', other: q.id });
       else if (rng.chance(0.5)) push({ owner: p.id, kind: 'not_beside_person', other: q.id });

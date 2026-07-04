@@ -4,6 +4,15 @@ A fully interactive, browser-based implementation of the **Murdoku** puzzle
 mechanics — sudoku-style placement meets murder-mystery deduction. All cases,
 characters, stories and art in this repository are original.
 
+> **Unofficial fan project.** Murdoku is a game by Manuel Garand
+> (murdoku.com); this repository is not affiliated with or endorsed by its
+> creator or publisher. It reimplements the puzzle *mechanics* with entirely
+> original content, for personal use. The game follows the official
+> **open-victim variant**: the victim's square is not placed by hand — it is
+> the last deduction, revealed at the crossing of the free row and free
+> column, and the "alone with the murderer" rule is read off the solved
+> layout rather than used as a solving constraint.
+
 **Play it:** serve the folder statically and open `index.html`:
 
 ```bash

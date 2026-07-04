@@ -54,24 +54,31 @@ export const CAMPAIGN_CASES = [
     "name": "Vera Vantablack",
     "role": "the veiled widow",
     "emoji": "🕷️",
-    "color": "#8b5cf6"
+    "color": "#8b5cf6",
+    "g": "f",
+    "mono": "VV"
    },
    {
     "id": "ash",
     "name": "Colonel Ash Redwood",
     "role": "the retired colonel",
     "emoji": "🎖️",
-    "color": "#ef4444"
+    "color": "#ef4444",
+    "g": "m",
+    "mono": "AR"
    },
    {
     "id": "felix",
     "name": "Dr. Felix Grimm",
     "role": "the village physician",
     "emoji": "🩺",
-    "color": "#10b981"
+    "color": "#10b981",
+    "g": "m",
+    "mono": "FG"
    },
    {
     "id": "v_gilt",
+    "g": "m",
     "name": "Barnaby Gilt",
     "role": "the millionaire host",
     "emoji": "🎩",
@@ -81,24 +88,15 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "v_gilt",
-    "kind": "not_in_room",
-    "room": 1
+    "owner": "ash",
+    "kind": "dir_of_person",
+    "other": "v_gilt",
+    "dir": "west"
    },
    {
     "owner": "ash",
-    "kind": "in_room",
-    "room": 1
-   },
-   {
-    "owner": "ash",
-    "kind": "same_col_object",
-    "objType": "clock"
-   },
-   {
-    "owner": "felix",
     "kind": "dir_of_object",
-    "objType": "armchair",
+    "objType": "clock",
     "dir": "south"
    },
    {
@@ -108,9 +106,16 @@ export const CAMPAIGN_CASES = [
     "dir": "south"
    },
    {
+    "owner": "felix",
+    "kind": "dist_of_person",
+    "other": "ash",
+    "dir": "north",
+    "n": 1
+   },
+   {
     "owner": "vera",
-    "kind": "not_beside_object",
-    "objType": "armchair"
+    "kind": "not_in_room",
+    "room": 0
    }
   ],
   "givens": {},
@@ -260,9 +265,9 @@ export const CAMPAIGN_CASES = [
   },
   "solution": {
    "ash": 13,
+   "vera": 4,
    "felix": 10,
-   "v_gilt": 3,
-   "vera": 4
+   "v_gilt": 3
   },
   "murderer": "vera",
   "difficulty": "easy"
@@ -320,24 +325,31 @@ export const CAMPAIGN_CASES = [
     "name": "Chef Aurelio Basil",
     "role": "the temperamental chef",
     "emoji": "🍳",
-    "color": "#f97316"
+    "color": "#f97316",
+    "g": "m",
+    "mono": "AB"
    },
    {
     "id": "prudence",
     "name": "Lady Prudence Opaline",
     "role": "the jewel heiress",
     "emoji": "💍",
-    "color": "#f59e0b"
+    "color": "#f59e0b",
+    "g": "f",
+    "mono": "PO"
    },
    {
     "id": "coco",
     "name": "Mademoiselle Coco Lark",
     "role": "the cabaret singer",
     "emoji": "🎤",
-    "color": "#ec4899"
+    "color": "#ec4899",
+    "g": "f",
+    "mono": "CL"
    },
    {
     "id": "v_crumb",
+    "g": "m",
     "name": "Otto Crumb",
     "role": "the master baker",
     "emoji": "🥖",
@@ -347,30 +359,33 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "basil",
-    "kind": "dir_of_person",
-    "other": "v_crumb",
+    "owner": "prudence",
+    "kind": "dir_of_object",
+    "objType": "cake",
     "dir": "south"
    },
    {
-    "owner": "v_crumb",
-    "kind": "in_room",
-    "room": 2
+    "owner": "basil",
+    "kind": "same_row_object",
+    "objType": "cake"
    },
    {
     "owner": "coco",
-    "kind": "edge",
+    "kind": "dist_of_person",
+    "other": "v_crumb",
+    "dir": "south",
+    "n": 1
+   },
+   {
+    "owner": "prudence",
+    "kind": "dir_of_person",
+    "other": "basil",
     "dir": "west"
    },
    {
-    "owner": "prudence",
+    "owner": "coco",
     "kind": "same_col_object",
-    "objType": "oven"
-   },
-   {
-    "owner": "prudence",
-    "kind": "edge",
-    "dir": "south"
+    "objType": "cake"
    }
   ],
   "givens": {},
@@ -519,10 +534,10 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "prudence": 13,
+   "basil": 11,
    "coco": 4,
-   "v_crumb": 2,
-   "basil": 11
+   "prudence": 13,
+   "v_crumb": 2
   },
   "murderer": "basil",
   "difficulty": "easy"
@@ -532,62 +547,62 @@ export const CAMPAIGN_CASES = [
   "title": "The Comet That Never Came",
   "size": 5,
   "roomOf": [
-   1,
-   1,
    2,
    2,
    2,
-   1,
-   1,
    2,
    2,
+   0,
+   0,
+   0,
    2,
-   1,
-   1,
    1,
    0,
    0,
-   3,
-   3,
-   3,
    0,
-   0,
+   1,
+   1,
    3,
    3,
    3,
-   0,
-   0
+   1,
+   1,
+   3,
+   3,
+   3,
+   1,
+   1
   ],
   "rooms": [
    {
-    "name": "Stairwell",
+    "name": "Chart Room",
     "hue": 0
    },
    {
-    "name": "Archive",
+    "name": "Workshop",
     "hue": 90
    },
    {
-    "name": "Workshop",
+    "name": "Stairwell",
     "hue": 180
    },
    {
-    "name": "Dome",
+    "name": "Archive",
     "hue": 270
    }
   ],
   "furniture": {
-   "3": {
-    "type": "desk"
+   "7": {
+    "type": "telescope"
    },
-   "4": {
-    "type": "bookshelf"
+   "10": {
+    "type": "lantern"
    },
-   "8": {
+   "19": {
+    "type": "telescope"
+   },
+   "24": {
     "type": "globe"
-   },
-   "12": {
-    "type": "bookshelf"
    }
   },
   "people": [
@@ -596,31 +611,40 @@ export const CAMPAIGN_CASES = [
     "name": "Professor Thaddeus Wren",
     "role": "the absent-minded professor",
     "emoji": "🦉",
-    "color": "#14b8a6"
+    "color": "#14b8a6",
+    "g": "m",
+    "mono": "TW"
    },
    {
     "id": "vera",
     "name": "Vera Vantablack",
     "role": "the veiled widow",
     "emoji": "🕷️",
-    "color": "#8b5cf6"
+    "color": "#8b5cf6",
+    "g": "f",
+    "mono": "VV"
    },
    {
     "id": "indigo",
     "name": "Captain Indigo Marsh",
     "role": "the storm-worn captain",
     "emoji": "⚓",
-    "color": "#3b82f6"
+    "color": "#3b82f6",
+    "g": "m",
+    "mono": "IM"
    },
    {
     "id": "felix",
     "name": "Dr. Felix Grimm",
     "role": "the village physician",
     "emoji": "🩺",
-    "color": "#10b981"
+    "color": "#10b981",
+    "g": "m",
+    "mono": "FG"
    },
    {
     "id": "v_starr",
+    "g": "f",
     "name": "Dr. Celeste Starr",
     "role": "the royal astronomer",
     "emoji": "🌠",
@@ -630,48 +654,45 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "vera",
-    "kind": "dir_of_object",
-    "objType": "globe",
-    "dir": "west"
-   },
-   {
-    "owner": "vera",
-    "kind": "dir_of_person",
-    "other": "wren",
-    "dir": "east"
-   },
-   {
     "owner": "indigo",
-    "kind": "same_row_object",
-    "objType": "bookshelf"
-   },
-   {
-    "owner": "felix",
-    "kind": "not_beside_object",
-    "objType": "globe"
-   },
-   {
-    "owner": "felix",
-    "kind": "dir_of_object",
-    "objType": "globe",
-    "dir": "west"
-   },
-   {
-    "owner": "v_starr",
     "kind": "dir_of_person",
-    "other": "indigo",
-    "dir": "west"
-   },
-   {
-    "owner": "felix",
-    "kind": "not_in_room",
-    "room": 1
+    "other": "v_starr",
+    "dir": "north"
    },
    {
     "owner": "wren",
+    "kind": "dir_of_person",
+    "other": "vera",
+    "dir": "north"
+   },
+   {
+    "owner": "vera",
+    "kind": "dist_of_person",
+    "other": "felix",
+    "dir": "south",
+    "n": 1
+   },
+   {
+    "owner": "felix",
     "kind": "edge",
-    "dir": "south"
+    "dir": "west"
+   },
+   {
+    "owner": "vera",
+    "kind": "same_col_object",
+    "objType": "globe"
+   },
+   {
+    "owner": "vera",
+    "kind": "not_same_room_person",
+    "other": "indigo"
+   },
+   {
+    "owner": "indigo",
+    "kind": "dist_of_person",
+    "other": "v_starr",
+    "dir": "east",
+    "n": 1
    }
   ],
   "givens": {},
@@ -820,11 +841,11 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "wren": 20,
-   "indigo": 14,
-   "felix": 2,
-   "vera": 6,
-   "v_starr": 18
+   "vera": 14,
+   "felix": 5,
+   "wren": 3,
+   "indigo": 17,
+   "v_starr": 21
   },
   "murderer": "indigo",
   "difficulty": "easy"
@@ -834,8 +855,23 @@ export const CAMPAIGN_CASES = [
   "title": "Snake Eyes at the Silver Slipper",
   "size": 5,
   "roomOf": [
-   3,
-   3,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   2,
+   2,
+   2,
+   0,
+   1,
+   2,
+   2,
+   0,
+   0,
+   2,
+   2,
    3,
    0,
    0,
@@ -843,26 +879,11 @@ export const CAMPAIGN_CASES = [
    3,
    3,
    0,
-   0,
-   3,
-   1,
-   2,
-   2,
-   0,
-   1,
-   1,
-   1,
-   2,
-   2,
-   1,
-   1,
-   1,
-   2,
-   2
+   0
   ],
   "rooms": [
    {
-    "name": "Terrace",
+    "name": "Lounge",
     "hue": 0
    },
    {
@@ -874,22 +895,22 @@ export const CAMPAIGN_CASES = [
     "hue": 180
    },
    {
-    "name": "Lounge",
+    "name": "Terrace",
     "hue": 270
    }
   ],
   "furniture": {
-   "7": {
-    "type": "chandelier"
+   "8": {
+    "type": "cards"
    },
-   "13": {
-    "type": "vault"
+   "9": {
+    "type": "plant"
    },
-   "20": {
-    "type": "vault"
+   "11": {
+    "type": "plant"
    },
-   "23": {
-    "type": "chandelier"
+   "24": {
+    "type": "plant"
    }
   },
   "people": [
@@ -898,31 +919,40 @@ export const CAMPAIGN_CASES = [
     "name": "Lady Prudence Opaline",
     "role": "the jewel heiress",
     "emoji": "💍",
-    "color": "#f59e0b"
+    "color": "#f59e0b",
+    "g": "f",
+    "mono": "PO"
    },
    {
     "id": "ash",
     "name": "Colonel Ash Redwood",
     "role": "the retired colonel",
     "emoji": "🎖️",
-    "color": "#ef4444"
+    "color": "#ef4444",
+    "g": "m",
+    "mono": "AR"
    },
    {
     "id": "coco",
     "name": "Mademoiselle Coco Lark",
     "role": "the cabaret singer",
     "emoji": "🎤",
-    "color": "#ec4899"
+    "color": "#ec4899",
+    "g": "f",
+    "mono": "CL"
    },
    {
     "id": "basil",
     "name": "Chef Aurelio Basil",
     "role": "the temperamental chef",
     "emoji": "🍳",
-    "color": "#f97316"
+    "color": "#f97316",
+    "g": "m",
+    "mono": "AB"
    },
    {
     "id": "v_marlow",
+    "g": "m",
     "name": "Sonny Marlow",
     "role": "the pit boss",
     "emoji": "🎲",
@@ -932,49 +962,45 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "prudence",
-    "kind": "dir_of_person",
-    "other": "ash",
-    "dir": "west"
-   },
-   {
-    "owner": "v_marlow",
-    "kind": "not_same_room_person",
-    "other": "coco"
-   },
-   {
-    "owner": "coco",
-    "kind": "dir_of_person",
-    "other": "basil",
-    "dir": "south"
-   },
-   {
     "owner": "basil",
-    "kind": "dir_of_person",
-    "other": "coco",
-    "dir": "east"
-   },
-   {
-    "owner": "prudence",
-    "kind": "beside_object",
-    "objType": "chandelier"
-   },
-   {
-    "owner": "prudence",
-    "kind": "dir_of_person",
-    "other": "coco",
-    "dir": "south"
+    "kind": "dir_of_object",
+    "objType": "plant",
+    "dir": "north"
    },
    {
     "owner": "ash",
     "kind": "dir_of_person",
+    "other": "prudence",
+    "dir": "east"
+   },
+   {
+    "owner": "ash",
+    "kind": "not_in_room",
+    "room": 0
+   },
+   {
+    "owner": "basil",
+    "kind": "same_col_object",
+    "objType": "cards"
+   },
+   {
+    "owner": "ash",
+    "kind": "dist_of_person",
     "other": "v_marlow",
+    "dir": "east",
+    "n": 2
+   },
+   {
+    "owner": "prudence",
+    "kind": "dir_of_person",
+    "other": "ash",
     "dir": "south"
    },
    {
-    "owner": "v_marlow",
-    "kind": "same_row_object",
-    "objType": "chandelier"
+    "owner": "coco",
+    "kind": "dir_of_person",
+    "other": "ash",
+    "dir": "north"
    }
   ],
   "givens": {},
@@ -1123,11 +1149,11 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "prudence": 18,
-   "v_marlow": 5,
-   "ash": 24,
-   "coco": 11,
-   "basil": 2
+   "basil": 3,
+   "ash": 17,
+   "prudence": 21,
+   "coco": 14,
+   "v_marlow": 5
   },
   "murderer": "basil",
   "difficulty": "medium"
@@ -1137,83 +1163,83 @@ export const CAMPAIGN_CASES = [
   "title": "Aria for a Dead Maestro",
   "size": 6,
   "roomOf": [
+   2,
+   2,
+   2,
+   2,
+   0,
+   3,
+   2,
+   2,
+   2,
+   0,
+   0,
+   3,
+   2,
+   2,
+   0,
+   0,
+   0,
+   3,
    1,
+   0,
+   0,
+   0,
+   3,
+   3,
    1,
-   2,
-   2,
-   2,
-   2,
+   3,
+   3,
+   3,
+   3,
+   4,
+   1,
    1,
    4,
    4,
-   3,
-   2,
-   2,
-   1,
    4,
-   3,
-   3,
-   3,
-   2,
-   1,
-   4,
-   0,
-   3,
-   3,
-   3,
-   1,
-   4,
-   0,
-   0,
-   0,
-   0,
-   1,
-   4,
-   0,
-   0,
-   0,
-   0
+   4
   ],
   "rooms": [
    {
-    "name": "Fly Tower",
+    "name": "Dressing Room",
     "hue": 0
    },
    {
-    "name": "Dressing Room",
+    "name": "Orchestra Pit",
     "hue": 72
    },
    {
-    "name": "Foyer",
+    "name": "Stage",
     "hue": 144
    },
    {
-    "name": "Stage",
+    "name": "Foyer",
     "hue": 216
    },
    {
-    "name": "Orchestra Pit",
+    "name": "Fly Tower",
     "hue": 288
    }
   ],
   "furniture": {
-   "12": {
+   "2": {
     "type": "piano"
    },
-   "14": {
-    "type": "piano"
+   "9": {
+    "type": "candelabrum"
    },
-   "16": {
-    "type": "harp"
-   },
-   "17": {
-    "type": "harp"
-   },
-   "20": {
-    "type": "curtain"
-   },
-   "25": {
+   "10": {
     "type": "chandelier"
+   },
+   "26": {
+    "type": "piano"
+   },
+   "31": {
+    "type": "chandelier"
+   },
+   "33": {
+    "type": "harp"
    }
   },
   "people": [
@@ -1222,38 +1248,49 @@ export const CAMPAIGN_CASES = [
     "name": "Mademoiselle Coco Lark",
     "role": "the cabaret singer",
     "emoji": "🎤",
-    "color": "#ec4899"
+    "color": "#ec4899",
+    "g": "f",
+    "mono": "CL"
    },
    {
     "id": "vera",
     "name": "Vera Vantablack",
     "role": "the veiled widow",
     "emoji": "🕷️",
-    "color": "#8b5cf6"
+    "color": "#8b5cf6",
+    "g": "f",
+    "mono": "VV"
    },
    {
     "id": "wren",
     "name": "Professor Thaddeus Wren",
     "role": "the absent-minded professor",
     "emoji": "🦉",
-    "color": "#14b8a6"
+    "color": "#14b8a6",
+    "g": "m",
+    "mono": "TW"
    },
    {
     "id": "prudence",
     "name": "Lady Prudence Opaline",
     "role": "the jewel heiress",
     "emoji": "💍",
-    "color": "#f59e0b"
+    "color": "#f59e0b",
+    "g": "f",
+    "mono": "PO"
    },
    {
     "id": "indigo",
     "name": "Captain Indigo Marsh",
     "role": "the storm-worn captain",
     "emoji": "⚓",
-    "color": "#3b82f6"
+    "color": "#3b82f6",
+    "g": "m",
+    "mono": "IM"
    },
    {
     "id": "v_fontaine",
+    "g": "m",
     "name": "Maestro Rex Fontaine",
     "role": "the tyrant conductor",
     "emoji": "🎼",
@@ -1263,53 +1300,54 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "v_fontaine",
-    "kind": "beside_object",
-    "objType": "harp"
-   },
-   {
-    "owner": "prudence",
-    "kind": "not_in_room",
-    "room": 1
-   },
-   {
-    "owner": "indigo",
-    "kind": "dir_of_person",
-    "other": "wren",
+    "owner": "wren",
+    "kind": "dir_of_object",
+    "objType": "piano",
     "dir": "west"
    },
    {
-    "owner": "prudence",
-    "kind": "dir_of_object",
-    "objType": "curtain",
-    "dir": "north"
+    "owner": "coco",
+    "kind": "beside_object",
+    "objType": "chandelier"
    },
    {
     "owner": "indigo",
-    "kind": "edge",
-    "dir": "south"
+    "kind": "dist_of_person",
+    "other": "coco",
+    "dir": "west",
+    "n": 3
+   },
+   {
+    "owner": "indigo",
+    "kind": "dist_of_person",
+    "other": "wren",
+    "dir": "north",
+    "n": 1
+   },
+   {
+    "owner": "vera",
+    "kind": "dist_of_person",
+    "other": "prudence",
+    "dir": "south",
+    "n": 1
+   },
+   {
+    "owner": "prudence",
+    "kind": "not_beside_object",
+    "objType": "piano"
    },
    {
     "owner": "coco",
-    "kind": "dir_of_person",
+    "kind": "dist_of_person",
     "other": "prudence",
-    "dir": "east"
+    "dir": "east",
+    "n": 1
    },
    {
-    "owner": "wren",
-    "kind": "same_room_person",
-    "other": "indigo"
-   },
-   {
-    "owner": "vera",
-    "kind": "dir_of_person",
-    "other": "v_fontaine",
-    "dir": "east"
-   },
-   {
-    "owner": "vera",
-    "kind": "beside_object",
-    "objType": "harp"
+    "owner": "coco",
+    "kind": "dir_of_object",
+    "objType": "candelabrum",
+    "dir": "south"
    }
   ],
   "givens": {},
@@ -1458,12 +1496,12 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "vera": 22,
-   "v_fontaine": 15,
-   "indigo": 30,
-   "prudence": 8,
-   "coco": 29,
-   "wren": 1
+   "coco": 16,
+   "wren": 6,
+   "prudence": 21,
+   "vera": 29,
+   "indigo": 1,
+   "v_fontaine": 32
   },
   "murderer": "vera",
   "difficulty": "medium"
@@ -1558,38 +1596,49 @@ export const CAMPAIGN_CASES = [
     "name": "Captain Indigo Marsh",
     "role": "the storm-worn captain",
     "emoji": "⚓",
-    "color": "#3b82f6"
+    "color": "#3b82f6",
+    "g": "m",
+    "mono": "IM"
    },
    {
     "id": "felix",
     "name": "Dr. Felix Grimm",
     "role": "the village physician",
     "emoji": "🩺",
-    "color": "#10b981"
+    "color": "#10b981",
+    "g": "m",
+    "mono": "FG"
    },
    {
     "id": "ash",
     "name": "Colonel Ash Redwood",
     "role": "the retired colonel",
     "emoji": "🎖️",
-    "color": "#ef4444"
+    "color": "#ef4444",
+    "g": "m",
+    "mono": "AR"
    },
    {
     "id": "coco",
     "name": "Mademoiselle Coco Lark",
     "role": "the cabaret singer",
     "emoji": "🎤",
-    "color": "#ec4899"
+    "color": "#ec4899",
+    "g": "f",
+    "mono": "CL"
    },
    {
     "id": "basil",
     "name": "Chef Aurelio Basil",
     "role": "the temperamental chef",
     "emoji": "🍳",
-    "color": "#f97316"
+    "color": "#f97316",
+    "g": "m",
+    "mono": "AB"
    },
    {
     "id": "v_pemberly",
+    "g": "f",
     "name": "Ambassador Iris Pemberly",
     "role": "the retiring diplomat",
     "emoji": "🕊️",
@@ -1599,26 +1648,19 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "basil",
-    "kind": "same_row_object",
-    "objType": "lantern"
-   },
-   {
-    "owner": "coco",
-    "kind": "dir_of_person",
-    "other": "basil",
-    "dir": "south"
+    "owner": "ash",
+    "kind": "same_col_object",
+    "objType": "clock"
    },
    {
     "owner": "felix",
-    "kind": "dir_of_person",
-    "other": "coco",
-    "dir": "east"
+    "kind": "beside_object",
+    "objType": "clock"
    },
    {
-    "owner": "ash",
-    "kind": "same_room_person",
-    "other": "basil"
+    "owner": "basil",
+    "kind": "beside_object",
+    "objType": "armchair"
    },
    {
     "owner": "indigo",
@@ -1627,21 +1669,23 @@ export const CAMPAIGN_CASES = [
     "dir": "south"
    },
    {
-    "owner": "basil",
+    "owner": "indigo",
     "kind": "dir_of_person",
-    "other": "felix",
+    "other": "v_pemberly",
+    "dir": "east"
+   },
+   {
+    "owner": "coco",
+    "kind": "dir_of_person",
+    "other": "basil",
     "dir": "west"
    },
    {
-    "owner": "v_pemberly",
-    "kind": "dir_of_person",
-    "other": "coco",
-    "dir": "west"
-   },
-   {
-    "owner": "v_pemberly",
-    "kind": "same_row_object",
-    "objType": "lantern"
+    "owner": "indigo",
+    "kind": "dist_of_person",
+    "other": "v_pemberly",
+    "dir": "north",
+    "n": 1
    }
   ],
   "givens": {},
@@ -1790,12 +1834,12 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "basil": 8,
-   "v_pemberly": 30,
-   "indigo": 29,
    "felix": 3,
+   "basil": 8,
    "ash": 16,
-   "coco": 19
+   "indigo": 29,
+   "coco": 19,
+   "v_pemberly": 30
   },
   "murderer": "coco",
   "difficulty": "medium"
@@ -1805,63 +1849,63 @@ export const CAMPAIGN_CASES = [
   "title": "The Thorn Garden Party",
   "size": 7,
   "roomOf": [
+   3,
+   3,
+   2,
+   2,
    1,
    1,
    1,
    3,
    3,
+   2,
+   2,
+   1,
+   1,
+   1,
    3,
+   3,
+   2,
    4,
-   1,
+   0,
    1,
    1,
    3,
    3,
-   3,
+   2,
    4,
-   1,
-   1,
-   1,
-   3,
-   0,
-   0,
-   0,
-   1,
-   1,
-   1,
-   3,
-   0,
    0,
    0,
    1,
    3,
    3,
+   2,
+   4,
+   4,
+   0,
+   0,
    3,
-   0,
+   3,
    2,
-   2,
-   0,
-   0,
-   0,
+   4,
+   4,
    0,
    0,
    2,
    2,
    2,
-   2,
-   2,
-   2,
-   2,
-   2,
-   2
+   4,
+   4,
+   0,
+   0
   ],
   "rooms": [
    {
-    "name": "Gazebo",
+    "name": "Apiary",
     "hue": 0
    },
    {
-    "name": "Rose Maze",
+    "name": "Gazebo",
     "hue": 72
    },
    {
@@ -1869,7 +1913,7 @@ export const CAMPAIGN_CASES = [
     "hue": 144
    },
    {
-    "name": "Apiary",
+    "name": "Rose Maze",
     "hue": 216
    },
    {
@@ -1878,29 +1922,29 @@ export const CAMPAIGN_CASES = [
    }
   ],
   "furniture": {
-   "5": {
-    "type": "statue"
-   },
-   "11": {
-    "type": "fountain"
-   },
-   "14": {
+   "0": {
     "type": "beehive"
    },
-   "29": {
-    "type": "statue"
+   "4": {
+    "type": "beehive"
    },
-   "31": {
+   "15": {
+    "type": "beehive"
+   },
+   "23": {
     "type": "fern"
    },
-   "36": {
+   "24": {
     "type": "fountain"
    },
-   "46": {
+   "32": {
+    "type": "statue"
+   },
+   "35": {
     "type": "fern"
    },
-   "48": {
-    "type": "statue"
+   "38": {
+    "type": "beehive"
    }
   },
   "people": [
@@ -1909,45 +1953,58 @@ export const CAMPAIGN_CASES = [
     "name": "Vera Vantablack",
     "role": "the veiled widow",
     "emoji": "🕷️",
-    "color": "#8b5cf6"
+    "color": "#8b5cf6",
+    "g": "f",
+    "mono": "VV"
    },
    {
     "id": "prudence",
     "name": "Lady Prudence Opaline",
     "role": "the jewel heiress",
     "emoji": "💍",
-    "color": "#f59e0b"
+    "color": "#f59e0b",
+    "g": "f",
+    "mono": "PO"
    },
    {
     "id": "wren",
     "name": "Professor Thaddeus Wren",
     "role": "the absent-minded professor",
     "emoji": "🦉",
-    "color": "#14b8a6"
+    "color": "#14b8a6",
+    "g": "m",
+    "mono": "TW"
    },
    {
     "id": "basil",
     "name": "Chef Aurelio Basil",
     "role": "the temperamental chef",
     "emoji": "🍳",
-    "color": "#f97316"
+    "color": "#f97316",
+    "g": "m",
+    "mono": "AB"
    },
    {
     "id": "felix",
     "name": "Dr. Felix Grimm",
     "role": "the village physician",
     "emoji": "🩺",
-    "color": "#10b981"
+    "color": "#10b981",
+    "g": "m",
+    "mono": "FG"
    },
    {
     "id": "indigo",
     "name": "Captain Indigo Marsh",
     "role": "the storm-worn captain",
     "emoji": "⚓",
-    "color": "#3b82f6"
+    "color": "#3b82f6",
+    "g": "m",
+    "mono": "IM"
    },
    {
     "id": "v_thorn",
+    "g": "m",
     "name": "Sir Digby Thorn",
     "role": "the prize horticulturist",
     "emoji": "🌹",
@@ -1957,72 +2014,58 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "indigo",
+    "owner": "wren",
+    "kind": "dist_of_person",
+    "other": "felix",
+    "dir": "east",
+    "n": 4
+   },
+   {
+    "owner": "wren",
     "kind": "dir_of_person",
-    "other": "wren",
+    "other": "v_thorn",
     "dir": "north"
    },
    {
-    "owner": "prudence",
-    "kind": "same_col_object",
-    "objType": "statue"
+    "owner": "basil",
+    "kind": "same_room_person",
+    "other": "felix"
    },
    {
-    "owner": "indigo",
-    "kind": "dir_of_person",
-    "other": "basil",
-    "dir": "east"
+    "owner": "felix",
+    "kind": "dist_of_person",
+    "other": "wren",
+    "dir": "north",
+    "n": 3
    },
    {
     "owner": "vera",
     "kind": "dir_of_person",
-    "other": "felix",
+    "other": "wren",
     "dir": "east"
    },
    {
-    "owner": "basil",
-    "kind": "same_col_object",
-    "objType": "fountain"
+    "owner": "indigo",
+    "kind": "dist_of_person",
+    "other": "v_thorn",
+    "dir": "west",
+    "n": 4
    },
    {
-    "owner": "prudence",
+    "owner": "vera",
     "kind": "dir_of_person",
     "other": "indigo",
     "dir": "north"
    },
    {
-    "owner": "felix",
-    "kind": "dir_of_person",
-    "other": "basil",
-    "dir": "east"
+    "owner": "prudence",
+    "kind": "same_row_object",
+    "objType": "beehive"
    },
    {
-    "owner": "felix",
-    "kind": "beside_object",
-    "objType": "fountain"
-   },
-   {
-    "owner": "wren",
-    "kind": "beside_object",
-    "objType": "statue"
-   },
-   {
-    "owner": "basil",
-    "kind": "dir_of_person",
-    "other": "vera",
-    "dir": "south"
-   },
-   {
-    "owner": "v_thorn",
-    "kind": "dir_of_person",
-    "other": "prudence",
-    "dir": "north"
-   },
-   {
-    "owner": "v_thorn",
-    "kind": "dir_of_person",
-    "other": "basil",
-    "dir": "south"
+    "owner": "vera",
+    "kind": "same_row_object",
+    "objType": "fern"
    }
   ],
   "givens": {},
@@ -2171,15 +2214,15 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "wren": 47,
-   "felix": 10,
-   "basil": 15,
-   "prudence": 34,
-   "vera": 4,
-   "indigo": 37,
-   "v_thorn": 21
+   "vera": 26,
+   "prudence": 3,
+   "wren": 39,
+   "basil": 8,
+   "felix": 14,
+   "indigo": 30,
+   "v_thorn": 48
   },
-  "murderer": "basil",
+  "murderer": "vera",
   "difficulty": "hard"
  },
  {
@@ -2187,52 +2230,52 @@ export const CAMPAIGN_CASES = [
   "title": "Midnight at the Meridian Museum",
   "size": 7,
   "roomOf": [
+   2,
+   2,
    0,
    0,
-   1,
-   4,
-   4,
-   4,
-   4,
-   0,
-   0,
-   1,
-   4,
-   4,
-   4,
-   4,
-   0,
-   0,
-   1,
-   1,
-   1,
-   4,
-   4,
-   0,
-   1,
-   1,
-   1,
-   1,
-   1,
-   4,
    0,
    1,
    1,
    2,
-   3,
-   3,
-   3,
    0,
    0,
-   2,
-   2,
-   3,
-   3,
-   3,
    0,
    0,
+   1,
+   1,
+   2,
+   0,
+   0,
+   0,
+   1,
+   1,
+   1,
    2,
    2,
+   0,
+   0,
+   1,
+   1,
+   1,
+   2,
+   2,
+   0,
+   3,
+   3,
+   1,
+   1,
+   4,
+   4,
+   4,
+   3,
+   3,
+   3,
+   1,
+   4,
+   4,
+   3,
+   3,
    3,
    3,
    3
@@ -2243,7 +2286,7 @@ export const CAMPAIGN_CASES = [
     "hue": 0
    },
    {
-    "name": "Vault",
+    "name": "Rotunda",
     "hue": 72
    },
    {
@@ -2251,38 +2294,38 @@ export const CAMPAIGN_CASES = [
     "hue": 144
    },
    {
-    "name": "Curator Office",
+    "name": "Vault",
     "hue": 216
    },
    {
-    "name": "Rotunda",
+    "name": "Curator Office",
     "hue": 288
    }
   ],
   "furniture": {
-   "4": {
+   "5": {
+    "type": "candelabrum"
+   },
+   "7": {
+    "type": "candelabrum"
+   },
+   "10": {
+    "type": "bookshelf"
+   },
+   "19": {
+    "type": "statue"
+   },
+   "23": {
     "type": "sarcophagus"
-   },
-   "12": {
-    "type": "bookshelf"
-   },
-   "14": {
-    "type": "statue"
-   },
-   "17": {
-    "type": "bookshelf"
-   },
-   "28": {
-    "type": "statue"
    },
    "33": {
+    "type": "candelabrum"
+   },
+   "39": {
     "type": "statue"
    },
-   "34": {
-    "type": "statue"
-   },
-   "35": {
-    "type": "sarcophagus"
+   "41": {
+    "type": "candelabrum"
    }
   },
   "people": [
@@ -2291,45 +2334,58 @@ export const CAMPAIGN_CASES = [
     "name": "Professor Thaddeus Wren",
     "role": "the absent-minded professor",
     "emoji": "🦉",
-    "color": "#14b8a6"
+    "color": "#14b8a6",
+    "g": "m",
+    "mono": "TW"
    },
    {
     "id": "vera",
     "name": "Vera Vantablack",
     "role": "the veiled widow",
     "emoji": "🕷️",
-    "color": "#8b5cf6"
+    "color": "#8b5cf6",
+    "g": "f",
+    "mono": "VV"
    },
    {
     "id": "ash",
     "name": "Colonel Ash Redwood",
     "role": "the retired colonel",
     "emoji": "🎖️",
-    "color": "#ef4444"
+    "color": "#ef4444",
+    "g": "m",
+    "mono": "AR"
    },
    {
     "id": "prudence",
     "name": "Lady Prudence Opaline",
     "role": "the jewel heiress",
     "emoji": "💍",
-    "color": "#f59e0b"
+    "color": "#f59e0b",
+    "g": "f",
+    "mono": "PO"
    },
    {
     "id": "coco",
     "name": "Mademoiselle Coco Lark",
     "role": "the cabaret singer",
     "emoji": "🎤",
-    "color": "#ec4899"
+    "color": "#ec4899",
+    "g": "f",
+    "mono": "CL"
    },
    {
     "id": "felix",
     "name": "Dr. Felix Grimm",
     "role": "the village physician",
     "emoji": "🩺",
-    "color": "#10b981"
+    "color": "#10b981",
+    "g": "m",
+    "mono": "FG"
    },
    {
     "id": "v_locke",
+    "g": "m",
     "name": "Curator Maximilian Locke",
     "role": "the museum curator",
     "emoji": "🗝️",
@@ -2339,66 +2395,60 @@ export const CAMPAIGN_CASES = [
   ],
   "clues": [
    {
-    "owner": "coco",
+    "owner": "felix",
+    "kind": "in_room",
+    "room": 0
+   },
+   {
+    "owner": "felix",
+    "kind": "dir_of_object",
+    "objType": "sarcophagus",
+    "dir": "west"
+   },
+   {
+    "owner": "vera",
+    "kind": "dist_of_person",
+    "other": "v_locke",
+    "dir": "north",
+    "n": 6
+   },
+   {
+    "owner": "ash",
+    "kind": "not_in_room",
+    "room": 4
+   },
+   {
+    "owner": "wren",
+    "kind": "dir_of_person",
+    "other": "felix",
+    "dir": "west"
+   },
+   {
+    "owner": "vera",
     "kind": "dir_of_object",
     "objType": "sarcophagus",
     "dir": "east"
    },
    {
-    "owner": "vera",
-    "kind": "dir_of_person",
-    "other": "coco",
-    "dir": "south"
-   },
-   {
     "owner": "wren",
-    "kind": "same_row_object",
-    "objType": "bookshelf"
+    "kind": "dist_of_person",
+    "other": "ash",
+    "dir": "south",
+    "n": 4
    },
    {
-    "owner": "felix",
-    "kind": "dir_of_object",
-    "objType": "bookshelf",
-    "dir": "east"
-   },
-   {
-    "owner": "prudence",
-    "kind": "same_room_person",
-    "other": "wren"
-   },
-   {
-    "owner": "v_locke",
-    "kind": "beside_object",
-    "objType": "statue"
-   },
-   {
-    "owner": "ash",
-    "kind": "alone"
-   },
-   {
-    "owner": "ash",
-    "kind": "same_row_object",
-    "objType": "bookshelf"
-   },
-   {
-    "owner": "felix",
-    "kind": "dir_of_person",
-    "other": "coco",
-    "dir": "north"
-   },
-   {
-    "owner": "prudence",
+    "owner": "coco",
     "kind": "not_same_room_person",
     "other": "felix"
    },
    {
-    "owner": "wren",
-    "kind": "same_row_object",
-    "objType": "statue"
+    "owner": "coco",
+    "kind": "same_room_person",
+    "other": "vera"
    },
    {
-    "owner": "wren",
-    "kind": "not_beside_object",
+    "owner": "prudence",
+    "kind": "beside_object",
     "objType": "statue"
    }
   ],
@@ -2548,15 +2598,15 @@ export const CAMPAIGN_CASES = [
    }
   },
   "solution": {
-   "wren": 16,
-   "felix": 6,
-   "v_locke": 32,
-   "ash": 7,
-   "coco": 40,
-   "vera": 45,
-   "prudence": 22
+   "felix": 15,
+   "prudence": 32,
+   "vera": 6,
+   "ash": 9,
+   "wren": 35,
+   "coco": 26,
+   "v_locke": 45
   },
-  "murderer": "coco",
+  "murderer": "prudence",
   "difficulty": "hard"
  }
 ];
