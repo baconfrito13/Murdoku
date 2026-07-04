@@ -59,7 +59,7 @@ const body = html
   .replace(/<script type="module" src="js\/main.js"><\/script>/, '')
   .trim();
 
-const css = read('css/style.css');
+const css = read('css/font.css') + '\n' + read('css/style.css');
 
 const single = `<!doctype html>
 <html lang="en">

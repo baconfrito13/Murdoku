@@ -1,0 +1,14 @@
+{
+  "name": "Murdoku — Murder Mystery Logic Puzzles",
+  "short_name": "Murdoku",
+  "description": "Sudoku-style murder mystery logic puzzles. Place every suspect; the last free square reveals the victim.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#12100e",
+  "theme_color": "#12100e",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

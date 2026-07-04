@@ -78,6 +78,7 @@ export class GameScreen {
     const diff = qs('#game-difficulty');
     diff.textContent = `${t('difficulty')[cse.difficulty] ?? cse.difficulty} · ${cse.size}×${cse.size}`;
     diff.className = `chip ${cse.difficulty ?? ''}`;
+    qs('#game-progress').textContent = `🕵 0/${this.suspects().length}`;
 
     this.board = new BoardView(qs('#board'), cse, {
       onCellActivate: (cell, mods) => this.onCell(cell, mods),
@@ -322,6 +323,7 @@ export class GameScreen {
 
     qs('#tool-undo').disabled = this.state.undoStack.length === 0;
     qs('#tool-redo').disabled = this.state.redoStack.length === 0;
+    qs('#game-progress').textContent = `🕵 ${this.suspectsPlaced()}/${this.suspects().length}`;
 
     const ready = vCell != null
       && this.conflictCells().size === 0
@@ -479,7 +481,10 @@ export class GameScreen {
     const text = caseReveal(this.case)
       .replaceAll('{murderer}', accusedP.name)
       .replaceAll('{murdererShort}', accusedP.name.split(' ')[0]);
-    qs('#verdict-emoji').textContent = '⚖️';
+    const emo = qs('#verdict-emoji');
+    emo.innerHTML = '';
+    emo.append(avatarNode(accusedP));
+    emo.append(document.createTextNode(' ⚖️'));
     qs('#verdict-title').textContent = t('caseClosed');
     qs('#verdict-text').textContent = text;
 

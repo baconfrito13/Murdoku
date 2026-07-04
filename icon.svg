@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#12100e"/>
+  <rect x="26" y="26" width="460" height="460" rx="74" fill="none" stroke="#e8b34b" stroke-width="10" opacity=".55"/>
+  <g transform="translate(256 244)">
+    <circle r="118" fill="none" stroke="#e8b34b" stroke-width="30"/>
+    <line x1="86" y1="86" x2="178" y2="178" stroke="#e8b34b" stroke-width="42" stroke-linecap="round"/>
+    <g stroke="#e8b34b" stroke-width="16" stroke-linecap="round" fill="none">
+      <circle cx="0" cy="-14" r="34"/>
+      <path d="M -34 30 a 34 30 0 0 1 68 0"/>
+    </g>
+  </g>
+  <text x="256" y="462" text-anchor="middle" font-family="Georgia, serif" font-size="54" letter-spacing="14" fill="#e8b34b">MURDOKU</text>
+</svg>

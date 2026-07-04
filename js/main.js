@@ -6,6 +6,7 @@ import { GameScreen } from './ui/game.js';
 import { CAMPAIGN_CASES } from './cases-data.js';
 import { makeDailyCase, makeRandomCase } from './daily.js';
 import { ICONS } from './icons.js';
+import { roomColor } from './ui/board.js';
 import { t, getLang, setLang, caseTitle } from './i18n.js';
 
 const screens = {
@@ -102,6 +103,17 @@ function applyStaticText() {
 }
 
 // ---------- home ----------
+function miniMap(cse) {
+  const map = el('span', { class: 'mini-map', 'aria-hidden': 'true' });
+  map.style.gridTemplateColumns = `repeat(${cse.size}, 1fr)`;
+  for (let cell = 0; cell < cse.size * cse.size; cell++) {
+    const sq = el('span', { class: cse.furniture[cell] ? 'mini-furn' : '' });
+    sq.style.background = roomColor(cse.rooms[cse.roomOf[cell]].hue, true);
+    map.append(sq);
+  }
+  return map;
+}
+
 function caseCard(cse, num, tags) {
   return el('button', {
     class: 'case-card', role: 'listitem',
@@ -109,6 +121,7 @@ function caseCard(cse, num, tags) {
   },
     el('span', { class: 'case-num' }, num),
     el('span', { class: 'case-name' }, caseTitle(cse)),
+    miniMap(cse),
     el('span', { class: 'case-tags' }, tags));
 }
 
@@ -183,6 +196,9 @@ qs('#btn-tutorial').addEventListener('click', () => openDialog(qs('#dlg-help')))
 qs('#btn-help').addEventListener('click', () => openDialog(qs('#dlg-help')));
 
 // ---------- boot ----------
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('sw.js').catch(() => { /* offline mode is a bonus */ });
+}
 pruneStaleSaves();
 wireDialogClose();
 applyTheme(settings.get().theme ?? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));

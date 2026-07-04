@@ -9,5 +9,8 @@
     "test": "node --test tests/engine.test.mjs",
     "e2e": "node e2e/game.e2e.mjs",
     "build": "node scripts/build-cases.mjs"
+  },
+  "devDependencies": {
+    "axe-core": "^4.12.1"
   }
 }
