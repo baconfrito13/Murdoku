@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maresia</title>
+<meta name="description" content="Maresia — onde surfar hoje em Portugal. Previsão de ondas, vento e marés spot a spot, com notas para surf, bodyboard, kitesurf, windsurf, wing foil e SUP.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0c1b2a">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=Big+Shoulders+Display:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<a class="skip" href="#main">Saltar para o conteúdo</a>
+<div class="app">
+  <header class="topbar">
+    <a class="brand" href="#agora" aria-label="Maresia — início">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 21c4.5 0 5.4-13 13.4-13 4.7 0 6.4 4.2 4.6 6.7-1.4 2-4.7 1.2-4.5-1.4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M3 26.5c3 0 3.6-2.2 6.5-2.2s3.5 2.2 6.5 2.2 3.6-2.2 6.5-2.2 3.5 2.2 6.5 2.2" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/></svg>
+      <span class="brand-name">Maresia</span>
+    </a>
+    <button id="data-status" class="status-pill" type="button" aria-live="polite"><span class="dot"></span><span class="txt">A carregar…</span></button>
+    <a class="icon-btn" id="btn-settings" href="#definicoes" aria-label="Definições"></a>
+  </header>
+
+  <nav class="sportbar" aria-label="Desporto">
+    <div class="sport-scroll" id="sport-tabs" role="tablist"></div>
+    <button type="button" class="level-pill" id="level-pill" aria-haspopup="dialog"></button>
+  </nav>
+
+  <aside class="rail" aria-label="Navegação principal">
+    <div class="rail-nav" id="rail-nav"></div>
+  </aside>
+
+  <main id="main" tabindex="-1"></main>
+
+  <nav class="tabbar" id="tabbar" aria-label="Navegação principal"></nav>
+</div>
+
+<div id="sheet-root"></div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

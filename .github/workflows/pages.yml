@@ -22,6 +22,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Maresia (surf/) ships a forecast snapshot as its offline fallback;
+      # refresh it on every deploy (best effort — never blocks the deploy).
+      - name: Refresh Maresia forecast snapshot
+        run: node surf/scripts/snapshot.mjs || echo "snapshot refresh skipped"
       - uses: actions/configure-pages@v5
         with:
           enablement: true
