@@ -1,0 +1,15 @@
+{
+  "name": "Maresia — onde surfar em Portugal",
+  "short_name": "Maresia",
+  "description": "Previsão de ondas, vento e marés spot a spot em Portugal, com notas para surf, bodyboard, kitesurf, windsurf, wing foil e SUP.",
+  "lang": "pt-PT",
+  "start_url": "./#agora",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef2f5",
+  "theme_color": "#0c1b2a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

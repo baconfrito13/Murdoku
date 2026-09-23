@@ -70,3 +70,11 @@ npm test          # engine + case-integrity tests (node --test)
 npm run e2e       # Playwright end-to-end play-through
 npm run build     # regenerate + re-verify frozen campaign cases
 ```
+
+## Also in this repo: Maresia 🌊
+
+[`surf/`](surf/) holds **Maresia**, a separate app (in European Portuguese)
+for surfers, bodyboarders, kiters, windsurfers, wingers and SUP riders in
+Portugal: live Open-Meteo forecasts scored spot by spot for ~70 spots, with an
+interactive map, a whole-coast heatmap and a 7-day chart per spot. See
+[`surf/README.md`](surf/README.md). Served at `/surf/` alongside the game.
